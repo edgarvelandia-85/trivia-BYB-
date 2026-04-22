@@ -6,19 +6,16 @@ const bank = {
     { q: "¿Qué fruta aparece en el escudo de Colombia?", o: ["Piña", "Granada", "Guanábana", "Maracuyá"], c: 1 },
     { q: "¿El mar que baña Cartagena es?", o: ["Caribe", "Atlántico", "Golfo de México", "Pacífico"], c: 0 }
   ],
-
   cultura: [
     { q: "¿Cuál es el país más grande del mundo?", o: ["Canadá", "China", "Rusia", "Estados Unidos"], c: 2 },
     { q: "¿Cuál es la moneda oficial de Japón?", o: ["Yuan", "Won", "Yen", "Baht"], c: 2 },
     { q: "¿Cuál es el océano más grande?", o: ["Atlántico", "Índico", "Pacífico", "Ártico"], c: 2 }
   ],
-
   musica: [
     { q: "¿Quién es el Rey del Pop?", o: ["Elvis Presley", "Michael Jackson", "Prince", "Bruno Mars"], c: 1 },
     { q: "¿Qué banda lanzó Bohemian Rhapsody?", o: ["Queen", "ABBA", "Aerosmith", "The Beatles"], c: 0 },
     { q: "¿Quién canta Shape of You?", o: ["Ed Sheeran", "Shawn Mendes", "Justin Bieber", "Sam Smith"], c: 0 }
   ],
-
   ciencia: [
     { q: "¿Cuál es el planeta más grande del sistema solar?", o: ["Saturno", "Marte", "Júpiter", "Neptuno"], c: 2 },
     { q: "¿Qué gas usamos principalmente para respirar?", o: ["Nitrógeno", "Oxígeno", "Helio", "Dióxido de carbono"], c: 1 },
@@ -40,7 +37,6 @@ export default function App() {
       const t = setTimeout(() => setTime(time - 1), 1000);
       return () => clearTimeout(t);
     }
-
     if (time === 0 && screen === "game") next();
   }, [time, screen]);
 
@@ -62,58 +58,91 @@ export default function App() {
   };
 
   const ans = (i) => {
-    if (i === bank[cat][idx].c) {
-      setScore(score + time * 10);
-    }
+    if (i === bank[cat][idx].c) setScore(score + time * 10);
     next();
   };
 
-  if (screen === "join") {
-    return (
-      <div className="p-8 max-w-xl mx-auto text-center space-y-3">
-        <h1 className="text-3xl font-bold">🏆 Trivia BYB</h1>
-        <input className="border p-2 w-full" placeholder="Tu nombre" value={name} onChange={(e) => setName(e.target.value)} />
-        <input className="border p-2 w-full" value={code} onChange={(e) => setCode(e.target.value)} />
-        <button className="border px-4 py-2 rounded" onClick={() => setScreen("cats")}>Entrar</button>
-      </div>
-    );
-  }
+  const box = {
+    background:"#ffffff10",
+    padding:"30px",
+    borderRadius:"20px",
+    maxWidth:"500px",
+    width:"100%",
+    textAlign:"center"
+  };
 
-  if (screen === "cats") {
-    return (
-      <div className="p-8 max-w-xl mx-auto text-center space-y-3">
-        <h2 className="text-2xl font-bold">Elige categoría</h2>
-        <button className="border px-4 py-2 rounded w-full" onClick={() => startCat("colombia")}>🇨🇴 Colombia</button>
-        <button className="border px-4 py-2 rounded w-full" onClick={() => startCat("cultura")}>🌎 Cultura General</button>
-        <button className="border px-4 py-2 rounded w-full" onClick={() => startCat("musica")}>🎵 Música</button>
-        <button className="border px-4 py-2 rounded w-full" onClick={() => startCat("ciencia")}>🔬 Ciencia</button>
-      </div>
-    );
-  }
+  const btn = {
+    padding:"14px",
+    width:"100%",
+    margin:"8px 0",
+    border:"none",
+    borderRadius:"12px",
+    background:"#00c896",
+    color:"#fff",
+    fontWeight:"bold",
+    cursor:"pointer"
+  };
 
-  if (screen === "game") {
-    const q = bank[cat][idx];
-
-    return (
-      <div className="p-8 max-w-xl mx-auto text-center space-y-3">
-        <div>⏱ {time}s</div>
-        <h2 className="text-xl font-bold">{q.q}</h2>
-
-        {q.o.map((x, i) => (
-          <button key={i} className="block border px-4 py-2 rounded w-full my-2" onClick={() => ans(i)}>
-            {x}
-          </button>
-        ))}
-      </div>
-    );
-  }
+  const input = {
+    padding:"14px",
+    width:"100%",
+    margin:"8px 0",
+    borderRadius:"12px",
+    border:"none"
+  };
 
   return (
-    <div className="p-8 max-w-xl mx-auto text-center space-y-3">
-      <h2 className="text-3xl font-bold">🏆 Final</h2>
-      <p>{name}</p>
-      <p>Puntaje: {score}</p>
-      <button className="border px-4 py-2 rounded" onClick={() => setScreen("cats")}>Jugar otra categoría</button>
+    <div style={{
+      minHeight:"100vh",
+      background:"linear-gradient(135deg,#111,#222)",
+      display:"flex",
+      justifyContent:"center",
+      alignItems:"center",
+      color:"#fff",
+      fontFamily:"Arial",
+      padding:"20px"
+    }}>
+      <div style={box}>
+
+        {screen === "join" && (
+          <>
+            <h1>🏆 Trivia BYB</h1>
+            <input style={input} placeholder="Tu nombre" value={name} onChange={(e)=>setName(e.target.value)} />
+            <input style={input} value={code} onChange={(e)=>setCode(e.target.value)} />
+            <button style={btn} onClick={()=>setScreen("cats")}>Entrar</button>
+          </>
+        )}
+
+        {screen === "cats" && (
+          <>
+            <h2>Elige Categoría</h2>
+            <button style={btn} onClick={()=>startCat("colombia")}>🇨🇴 Colombia</button>
+            <button style={btn} onClick={()=>startCat("cultura")}>🌎 Cultura General</button>
+            <button style={btn} onClick={()=>startCat("musica")}>🎵 Música</button>
+            <button style={btn} onClick={()=>startCat("ciencia")}>🔬 Ciencia</button>
+          </>
+        )}
+
+        {screen === "game" && (
+          <>
+            <h2>⏱ {time}s</h2>
+            <h3>{bank[cat][idx].q}</h3>
+            {bank[cat][idx].o.map((x,i)=>(
+              <button key={i} style={btn} onClick={()=>ans(i)}>{x}</button>
+            ))}
+          </>
+        )}
+
+        {screen === "end" && (
+          <>
+            <h1>🏆 Final</h1>
+            <h2>{name}</h2>
+            <h3>{score} puntos</h3>
+            <button style={btn} onClick={()=>setScreen("cats")}>Jugar otra categoría</button>
+          </>
+        )}
+
+      </div>
     </div>
   );
 }

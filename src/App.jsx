@@ -1,66 +1,15 @@
 import React, { useEffect, useState } from "react";
 
-const bank = {
-  colombia: [
-    { q: "¿En qué año nació la Gran Colombia?", o: ["1810", "1819", "1821", "1830"], c: 1 },
-    { q: "¿Qué fruta aparece en el escudo de Colombia?", o: ["Piña", "Granada", "Guanábana", "Maracuyá"], c: 1 },
-    { q: "¿El mar que baña Cartagena es?", o: ["Caribe", "Atlántico", "Golfo de México", "Pacífico"], c: 0 }
-  ],
-  cultura: [
-    { q: "¿Cuál es el país más grande del mundo?", o: ["Canadá", "China", "Rusia", "Estados Unidos"], c: 2 },
-    { q: "¿Cuál es la moneda oficial de Japón?", o: ["Yuan", "Won", "Yen", "Baht"], c: 2 },
-    { q: "¿Cuál es el océano más grande?", o: ["Atlántico", "Índico", "Pacífico", "Ártico"], c: 2 }
-  ],
-  musica: [
-    { q: "¿Quién es el Rey del Pop?", o: ["Elvis Presley", "Michael Jackson", "Prince", "Bruno Mars"], c: 1 },
-    { q: "¿Qué banda lanzó Bohemian Rhapsody?", o: ["Queen", "ABBA", "Aerosmith", "The Beatles"], c: 0 },
-    { q: "¿Quién canta Shape of You?", o: ["Ed Sheeran", "Shawn Mendes", "Justin Bieber", "Sam Smith"], c: 0 }
-  ],
-  ciencia: [
-    { q: "¿Cuál es el planeta más grande del sistema solar?", o: ["Saturno", "Marte", "Júpiter", "Neptuno"], c: 2 },
-    { q: "¿Qué gas usamos principalmente para respirar?", o: ["Nitrógeno", "Oxígeno", "Helio", "Dióxido de carbono"], c: 1 },
-    { q: "¿Cuál es el símbolo químico del oro?", o: ["Ag", "Au", "Ar", "O"], c: 1 }
-  ]
-};
+const categories = ["🇨🇴 Colombia", "🌎 Cultura General", "🎵 Música", "🔬 Ciencia"];
 
 export default function App() {
-  const [screen, setScreen] = useState("join");
+  const [mode, setMode] = useState("");
+  const [screen, setScreen] = useState("home");
   const [name, setName] = useState("");
   const [code, setCode] = useState("BYB25");
-  const [cat, setCat] = useState("");
-  const [idx, setIdx] = useState(0);
-  const [time, setTime] = useState(10);
-  const [score, setScore] = useState(0);
-
-  useEffect(() => {
-    if (screen === "game" && time > 0) {
-      const t = setTimeout(() => setTime(time - 1), 1000);
-      return () => clearTimeout(t);
-    }
-    if (time === 0 && screen === "game") next();
-  }, [time, screen]);
-
-  const startCat = (c) => {
-    setCat(c);
-    setIdx(0);
-    setScore(0);
-    setTime(10);
-    setScreen("game");
-  };
-
-  const next = () => {
-    if (idx < 2) {
-      setIdx(idx + 1);
-      setTime(10);
-    } else {
-      setScreen("end");
-    }
-  };
-
-  const ans = (i) => {
-    if (i === bank[cat][idx].c) setScore(score + time * 10);
-    next();
-  };
+  const [players, setPlayers] = useState([]);
+  const [scores, setScores] = useState({});
+  const [usedCats, setUsedCats] = useState([]);
 
   const box = {
     background:"#ffffff10",
@@ -91,6 +40,31 @@ export default function App() {
     border:"none"
   };
 
+  const joinPlayer = () => {
+    if (!name) return;
+    if (!players.includes(name)) {
+      setPlayers([...players, name]);
+      setScores({ ...scores, [name]: 0 });
+    }
+    setScreen("cats");
+  };
+
+  const simulateFinish = (cat) => {
+    const pts = Math.floor(Math.random() * 300) + 100;
+    setScores({ ...scores, [name]: (scores[name] || 0) + pts });
+    setUsedCats([...usedCats, cat]);
+
+    const remaining = categories.filter(c => !usedCats.includes(c) && c !== cat);
+
+    if (remaining.length === 0) {
+      setScreen("done");
+    } else {
+      setScreen("cats");
+    }
+  };
+
+  const ranking = Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+
   return (
     <div style={{
       minHeight:"100vh",
@@ -104,41 +78,60 @@ export default function App() {
     }}>
       <div style={box}>
 
-        {screen === "join" && (
+        {screen === "home" && (
           <>
             <h1>🏆 Trivia BYB</h1>
+            <button style={btn} onClick={()=>{setMode("player");setScreen("join");}}>🎮 Soy Jugador</button>
+            <button style={btn} onClick={()=>{setMode("host");setScreen("host");}}>🧑‍💼 Soy Host</button>
+          </>
+        )}
+
+        {screen === "join" && (
+          <>
+            <h2>Ingreso Jugador</h2>
             <input style={input} placeholder="Tu nombre" value={name} onChange={(e)=>setName(e.target.value)} />
             <input style={input} value={code} onChange={(e)=>setCode(e.target.value)} />
-            <button style={btn} onClick={()=>setScreen("cats")}>Entrar</button>
+            <button style={btn} onClick={joinPlayer}>Entrar</button>
           </>
         )}
 
         {screen === "cats" && (
           <>
             <h2>Elige Categoría</h2>
-            <button style={btn} onClick={()=>startCat("colombia")}>🇨🇴 Colombia</button>
-            <button style={btn} onClick={()=>startCat("cultura")}>🌎 Cultura General</button>
-            <button style={btn} onClick={()=>startCat("musica")}>🎵 Música</button>
-            <button style={btn} onClick={()=>startCat("ciencia")}>🔬 Ciencia</button>
-          </>
-        )}
-
-        {screen === "game" && (
-          <>
-            <h2>⏱ {time}s</h2>
-            <h3>{bank[cat][idx].q}</h3>
-            {bank[cat][idx].o.map((x,i)=>(
-              <button key={i} style={btn} onClick={()=>ans(i)}>{x}</button>
+            {categories.filter(c=>!usedCats.includes(c)).map((cat)=>(
+              <button key={cat} style={btn} onClick={()=>simulateFinish(cat)}>
+                {cat}
+              </button>
             ))}
           </>
         )}
 
-        {screen === "end" && (
+        {screen === "done" && (
           <>
-            <h1>🏆 Final</h1>
-            <h2>{name}</h2>
-            <h3>{score} puntos</h3>
-            <button style={btn} onClick={()=>setScreen("cats")}>Jugar otra categoría</button>
+            <h2>🏆 Juego Terminado</h2>
+            <p>{name}</p>
+            <p>{scores[name]} puntos</p>
+          </>
+        )}
+
+        {screen === "host" && (
+          <>
+            <h2>🧑‍💼 Panel Host</h2>
+            <p>Código Sala:</p>
+            <h1>{code}</h1>
+            <h3>Jugadores</h3>
+            {players.length === 0 && <p>Sin jugadores aún</p>}
+            {players.map((p)=><p key={p}>{p}</p>)}
+
+            <hr style={{margin:"15px 0",opacity:.3}} />
+
+            <h3>Ranking Final</h3>
+            {ranking.length===0 && <p>Sin resultados</p>}
+            {ranking.map((r,i)=>(
+              <p key={r[0]}>
+                {i+1}. {r[0]} - {r[1]} pts
+              </p>
+            ))}
           </>
         )}
 

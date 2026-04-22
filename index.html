@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trivia BYB</title>
+<style>
+body{
+font-family:Arial,Helvetica,sans-serif;
+background:linear-gradient(135deg,#111,#222);
+color:#fff;
+text-align:center;
+padding:30px;
+margin:0;
+}
+.box{
+max-width:700px;
+margin:auto;
+background:#ffffff10;
+padding:30px;
+border-radius:20px;
+backdrop-filter:blur(10px);
+}
+input,button{
+padding:12px;
+margin:8px;
+border:none;
+border-radius:10px;
+font-size:16px;
+}
+button{
+cursor:pointer;
+background:#00c896;
+color:#fff;
+font-weight:bold;
+}
+button:hover{opacity:.9}
+.answer{
+display:block;
+width:100%;
+margin:10px 0;
+background:#333;
+}
+#ranking{
+text-align:left;
+margin-top:20px;
+}
+.big{
+font-size:28px;
+font-weight:bold;
+margin-bottom:20px;
+}
+</style>
+</head>
+<body>
+<div class="box">
+<div class="big">🏆 Trivia BYB Digital</div>
+
+<div id="register">
+<input id="name" placeholder="Tu nombre">
+<button onclick="join()">Entrar</button>
+<p id="players"></p>
+<button onclick="start()">Iniciar Juego</button>
+</div>
+
+<div id="game" style="display:none">
+<h2 id="question"></h2>
+<div id="answers"></div>
+<p>⏱ Tiempo: <span id="time">15</span></p>
+</div>
+
+<div id="ranking"></div>
+</div>
+
+<script>
+let players=[];
+let scores={};
+let turn=0;
+let q=0;
+let timer=15;
+let interval;
+
+const questions=[
+{
+q:"¿Capital de Japón?",
+a:["Tokio","Seúl","Pekín","Bangkok"],
+c:0
+},
+{
+q:"¿Qué cantante interpreta Shape of You?",
+a:["Ed Sheeran","Bruno Mars","Drake","Bieber"],
+c:0
+},
+{
+q:"¿Moneda oficial de Colombia?",
+a:["Peso","Dólar","Euro","Sol"],
+c:0
+},
+{
+q:"¿Serie donde aparece Walter White?",
+a:["Dark","Breaking Bad","Lost","Elite"],
+c:1
+},
+{
+q:"¿Planeta más grande?",
+a:["Marte","Júpiter","Saturno","Venus"],
+c:1
+}
+];
+
+function join(){
+let n=document.getElementById("name").value.trim();
+if(!n)return;
+if(players.includes(n))return;
+players.push(n);
+scores[n]=0;
+document.getElementById("players").innerText="Jugadores: "+players.join(", ");
+document.getElementById("name").value="";
+}
+
+function start(){
+if(players.length<2){alert("Entren mínimo 2 jugadores");return;}
+document.getElementById("register").style.display="none";
+document.getElementById("game").style.display="block";
+loadQuestion();
+}
+
+function loadQuestion(){
+if(q>=questions.length){finish();return;}
+let data=questions[q];
+document.getElementById("question").innerText=
+players[turn]+": "+data.q;
+
+let html="";
+data.a.forEach((x,i)=>{
+html+=`<button class="answer" onclick="answer(${i})">${x}</button>`;
+});
+document.getElementById("answers").innerHTML=html;
+
+timer=15;
+document.getElementById("time").innerText=timer;
+clearInterval(interval);
+interval=setInterval(()=>{
+timer--;
+document.getElementById("time").innerText=timer;
+if(timer<=0){
+clearInterval(interval);
+nextTurn();
+}
+},1000);
+}
+
+function answer(i){
+clearInterval(interval);
+if(i===questions[q].c){
+scores[players[turn]]+=timer*10;
+alert("✅ Correcto");
+}else{
+alert("❌ Incorrecto");
+}
+nextTurn();
+}
+
+function nextTurn(){
+turn++;
+if(turn>=players.length){
+turn=0;
+q++;
+}
+loadQuestion();
+updateRanking();
+}
+
+function updateRanking(){
+let arr=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+let html="<h3>📊 Ranking</h3>";
+arr.forEach((x,i)=>{
+html+=`${i+1}. ${x[0]} - ${x[1]} pts<br>`;
+});
+document.getElementById("ranking").innerHTML=html;
+}
+
+function finish(){
+document.getElementById("game").style.display="none";
+updateRanking();
+let win=Object.entries(scores).sort((a,b)=>b[1]-a[1])[0];
+document.getElementById("ranking").innerHTML+=
+`<h1>🏆 Ganador: ${win[0]}</h1>`;
+}
+</script>
+</body>
+</html>

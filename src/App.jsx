@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const bank = {
   "🇨🇴 Colombia": [
@@ -27,7 +27,6 @@ const categories = Object.keys(bank);
 
 export default function App() {
   const [screen,setScreen]=useState("home");
-  const [mode,setMode]=useState("");
   const [name,setName]=useState("");
   const [code,setCode]=useState("BYB25");
   const [players,setPlayers]=useState([]);
@@ -36,6 +35,9 @@ export default function App() {
   const [cat,setCat]=useState("");
   const [idx,setIdx]=useState(0);
   const [time,setTime]=useState(10);
+
+  const okRef = useRef(null);
+  const badRef = useRef(null);
 
   useEffect(()=>{
     if(screen==="game" && time>0){
@@ -51,8 +53,12 @@ export default function App() {
 
   const join=()=>{
     if(!players.includes(name)){
-      setPlayers([...players,name]);
-      setScores({...scores,[name]:0});
+      const newPlayers=[...players,name];
+      const newScores={...scores,[name]:0};
+      setPlayers(newPlayers);
+      setScores(newScores);
+      localStorage.setItem("triviaPlayers", JSON.stringify(newPlayers));
+      localStorage.setItem("triviaScores", JSON.stringify(newScores));
     }
     setScreen("cats");
   };
@@ -71,6 +77,9 @@ export default function App() {
     }else{
       const newUsed=[...usedCats,cat];
       setUsedCats(newUsed);
+
+      localStorage.setItem("triviaScores", JSON.stringify(scores));
+
       if(newUsed.length===categories.length){
         setScreen("done");
       }else{
@@ -81,21 +90,30 @@ export default function App() {
 
   const answer=(i)=>{
     if(i===bank[cat][idx].c){
-      setScores({...scores,[name]:scores[name]+time*10});
+      okRef.current.play();
+      const ns={...scores,[name]:scores[name]+time*10};
+      setScores(ns);
+      localStorage.setItem("triviaScores", JSON.stringify(ns));
+    }else{
+      badRef.current.play();
     }
     next();
   };
 
-  const ranking=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+  const hostScores = JSON.parse(localStorage.getItem("triviaScores") || "{}");
+  const ranking = Object.entries(hostScores).sort((a,b)=>b[1]-a[1]);
 
   return (
   <div style={{minHeight:"100vh",background:"linear-gradient(135deg,#111,#222)",display:"flex",justifyContent:"center",alignItems:"center",color:"#fff",fontFamily:"Arial",padding:"20px"}}>
    <div style={box}>
 
+   <audio ref={okRef} src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3" />
+   <audio ref={badRef} src="https://assets.mixkit.co/active_storage/sfx/2955/2955-preview.mp3" />
+
    {screen==="home" && <>
     <h1>🏆 Trivia BYB</h1>
-    <button style={btn} onClick={()=>{setMode("player");setScreen("join");}}>🎮 Soy Jugador</button>
-    <button style={btn} onClick={()=>{setMode("host");setScreen("host");}}>🧑‍💼 Soy Host</button>
+    <button style={btn} onClick={()=>setScreen("join")}>🎮 Soy Jugador</button>
+    <button style={btn} onClick={()=>setScreen("host")}>🧑‍💼 Soy Host</button>
    </>}
 
    {screen==="join" && <>
@@ -127,13 +145,12 @@ export default function App() {
    </>}
 
    {screen==="host" && <>
-    <h2>🧑‍💼 Panel Host</h2>
+    <h2>🧑‍💼 Resultados Finales</h2>
     <h1>{code}</h1>
-    <h3>Jugadores</h3>
-    {players.map(p=><p key={p}>{p}</p>)}
-    <hr style={{margin:"15px 0",opacity:.3}} />
-    <h3>Ranking Final</h3>
-    {ranking.map((r,i)=><p key={r[0]}>{i+1}. {r[0]} - {r[1]} pts</p>)}
+    {ranking.length===0 && <p>Sin resultados aún</p>}
+    {ranking.map((r,i)=>(
+      <p key={r[0]}>{i+1}. {r[0]} - {r[1]} pts</p>
+    ))}
    </>}
 
    </div>

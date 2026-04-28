@@ -1,13 +1,15 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-/* sonidos */
+/* sonidos NUEVOS */
 const okSound = new Audio(
-  "https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3"
+  "https://assets.mixkit.co/active_storage/sfx/270/270-preview.mp3"
 );
+okSound.volume = 0.35;
 
 const badSound = new Audio(
-  "https://assets.mixkit.co/active_storage/sfx/2955/2955-preview.mp3"
+  "https://assets.mixkit.co/active_storage/sfx/2958/2958-preview.mp3"
 );
+badSound.volume = 0.25;
 
 /* preguntas */
 const categories = {
@@ -43,7 +45,6 @@ const categories = {
 };
 
 export default function MitoVerdad() {
-  /* memoria temporal (NO guarda al refrescar) */
   const [players, setPlayers] = useState([]);
   const [scores, setScores] = useState({});
 
@@ -106,10 +107,12 @@ export default function MitoVerdad() {
     let total = pts;
 
     if (ans === current.a) {
+      okSound.currentTime = 0;
       okSound.play();
       total += 10;
       setPts(total);
     } else {
+      badSound.currentTime = 0;
       badSound.play();
     }
 
@@ -142,8 +145,6 @@ export default function MitoVerdad() {
 
       setScreen("result");
     } else {
-      setIndex(0);
-      setTime(10);
       setScreen("category");
     }
   }
@@ -194,7 +195,6 @@ export default function MitoVerdad() {
           ⚡ Mito o Verdad
         </h1>
 
-        {/* LOGIN */}
         {screen === "login" && (
           <>
             <h2>Registrar jugador</h2>
@@ -222,31 +222,9 @@ export default function MitoVerdad() {
             >
               Entrar a jugar
             </button>
-
-            {players.length > 0 && (
-              <>
-                <h3>Jugadores registrados</h3>
-
-                {players.map((p) => (
-                  <button
-                    key={p}
-                    onClick={() => startGame(p)}
-                    style={{
-                      ...btn,
-                      width: "100%",
-                      background: "#334155",
-                      marginBottom: "10px"
-                    }}
-                  >
-                    {p}
-                  </button>
-                ))}
-              </>
-            )}
           </>
         )}
 
-        {/* CATEGORY */}
         {screen === "category" && (
           <>
             <h2>Hola {active}</h2>
@@ -274,7 +252,11 @@ export default function MitoVerdad() {
             </select>
 
             <button
-              onClick={() => setScreen("game")}
+              onClick={() => {
+                setIndex(0);
+                setTime(10);
+                setScreen("game");
+              }}
               style={{
                 ...btn,
                 width: "100%",
@@ -286,7 +268,6 @@ export default function MitoVerdad() {
           </>
         )}
 
-        {/* GAME */}
         {screen === "game" && (
           <>
             <div
@@ -333,7 +314,6 @@ export default function MitoVerdad() {
           </>
         )}
 
-        {/* RESULTADO */}
         {screen === "result" && (
           <>
             <h2>🏆 Resultados de la sesión</h2>

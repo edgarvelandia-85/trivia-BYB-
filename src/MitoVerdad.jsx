@@ -1,26 +1,39 @@
 import React, { useEffect, useMemo, useState } from "react";
 
+/* sonidos */
+const okSound = new Audio(
+  "https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3"
+);
+const badSound = new Audio(
+  "https://assets.mixkit.co/active_storage/sfx/2955/2955-preview.mp3"
+);
+
+/* preguntas */
 const categories = {
   Cultura: [
     { q: "La Gran Muralla China es visible desde el espacio.", a: false },
     { q: "Australia es país y continente.", a: true },
     { q: "Shakespeare escribió Hamlet.", a: true }
   ],
+
   Diseño: [
     { q: "El formato SVG pierde calidad al ampliar.", a: false },
     { q: "CMYK se usa para impresión.", a: true },
     { q: "PNG siempre pesa menos que JPG.", a: false }
   ],
+
   Marketing: [
     { q: "Una CTA ayuda a convertir.", a: true },
     { q: "Más seguidores siempre significan más ventas.", a: false },
     { q: "El email marketing aún funciona.", a: true }
   ],
+
   Tecnología: [
     { q: "Reiniciar no sirve para nada.", a: false },
     { q: "La nube significa archivos en internet.", a: true },
     { q: "Modo incógnito te vuelve invisible.", a: false }
   ],
+
   General: [
     { q: "El lirio de mayo es la flor nacional de Colombia.", a: true },
     { q: "Los murciélagos son ciegos.", a: false },
@@ -28,23 +41,24 @@ const categories = {
   ]
 };
 
-const defaultPlayers = ["Jugador 1", "Jugador 2", "Jugador 3"];
-
 export default function MitoVerdad() {
   const [players, setPlayers] = useState(
-    () => JSON.parse(localStorage.getItem("mv_players")) || defaultPlayers
+    () => JSON.parse(localStorage.getItem("mv_players")) || []
   );
 
   const [scores, setScores] = useState(
     () => JSON.parse(localStorage.getItem("mv_scores")) || {}
   );
 
-  const [screen, setScreen] = useState("home");
+  const [name, setName] = useState("");
   const [active, setActive] = useState("");
+  const [screen, setScreen] = useState("login");
+
   const [cat, setCat] = useState("Diseño");
   const [index, setIndex] = useState(0);
   const [pts, setPts] = useState(0);
   const [time, setTime] = useState(10);
+  const [playedCategories, setPlayedCategories] = useState([]);
 
   useEffect(() => {
     localStorage.setItem("mv_players", JSON.stringify(players));
@@ -56,7 +70,10 @@ export default function MitoVerdad() {
 
   const ranking = useMemo(() => {
     return players
-      .map((p) => ({ name: p, score: scores[p] || 0 }))
+      .map((p) => ({
+        name: p,
+        score: scores[p] || 0
+      }))
       .sort((a, b) => b.score - a.score);
   }, [players, scores]);
 
@@ -66,50 +83,81 @@ export default function MitoVerdad() {
   useEffect(() => {
     if (screen !== "game") return;
 
-    if (time <= 0) nextQuestion();
-    const t = setTimeout(() => setTime(time - 1), 1000);
+    if (time <= 0) {
+      nextQuestion();
+      return;
+    }
 
+    const t = setTimeout(() => setTime(time - 1), 1000);
     return () => clearTimeout(t);
   }, [time, screen]);
+
+  function registerPlayer() {
+    const clean = name.trim();
+
+    if (!clean) return;
+
+    if (!players.includes(clean)) {
+      setPlayers([...players, clean]);
+    }
+
+    startGame(clean);
+    setName("");
+  }
+
+  function startGame(player) {
+    setActive(player);
+    setPts(0);
+    setIndex(0);
+    setTime(10);
+    setPlayedCategories([]);
+    setScreen("category");
+  }
+
+  function choose(ans) {
+    let total = pts;
+
+    if (ans === current.a) {
+      okSound.play();
+      total += 10;
+      setPts(total);
+    } else {
+      badSound.play();
+    }
+
+    if (index < questions.length - 1) {
+      setIndex(index + 1);
+      setTime(10);
+    } else {
+      finishCategory(total);
+    }
+  }
 
   function nextQuestion() {
     if (index < questions.length - 1) {
       setIndex(index + 1);
       setTime(10);
     } else {
-      setScores({
-        ...scores,
-        [active]: (scores[active] || 0) + pts
-      });
-      setScreen("result");
+      finishCategory(pts);
     }
   }
 
-  function choose(ans) {
-    let total = pts;
-    if (ans === current.a) {
-      total += 10;
-      setPts(total);
-    }
+  function finishCategory(totalPts) {
+    const updated = [...playedCategories, cat];
+    setPlayedCategories(updated);
 
-    if (index < questions.length - 1) {
-      setIndex(index + 1);
-      setTime(10);
+    if (updated.length === Object.keys(categories).length) {
+      setScores({
+        ...scores,
+        [active]: (scores[active] || 0) + totalPts
+      });
+
+      setScreen("result");
     } else {
-      setScores({
-        ...scores,
-        [active]: (scores[active] || 0) + total
-      });
-      setScreen("result");
+      setIndex(0);
+      setTime(10);
+      setScreen("category");
     }
-  }
-
-  function start(name) {
-    setActive(name);
-    setPts(0);
-    setIndex(0);
-    setTime(10);
-    setScreen("category");
   }
 
   const page = {
@@ -121,7 +169,7 @@ export default function MitoVerdad() {
   };
 
   const card = {
-    maxWidth: "800px",
+    maxWidth: "850px",
     margin: "0 auto",
     background: "rgba(255,255,255,0.05)",
     border: "1px solid rgba(255,255,255,0.08)",
@@ -146,38 +194,33 @@ export default function MitoVerdad() {
           ⚡ Mito o Verdad
         </h1>
 
-        {screen === "home" && (
+        {/* LOGIN */}
+        {screen === "login" && (
           <>
-            <h3>Jugadores</h3>
+            <h2>Ingresa tu nombre</h2>
 
-            {players.map((p, i) => (
-              <div key={i} style={{ marginBottom: "12px" }}>
-                <input
-                  value={p}
-                  onChange={(e) => {
-                    const arr = [...players];
-                    arr[i] = e.target.value;
-                    setPlayers(arr);
-                  }}
-                  style={{
-                    padding: "10px",
-                    width: "60%",
-                    marginRight: "10px",
-                    borderRadius: "10px"
-                  }}
-                />
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Tu nombre"
+              style={{
+                width: "100%",
+                padding: "12px",
+                borderRadius: "10px",
+                marginBottom: "15px"
+              }}
+            />
 
-                <button
-                  onClick={() => start(p)}
-                  style={{
-                    ...btn,
-                    background: "#2563eb"
-                  }}
-                >
-                  Jugar
-                </button>
-              </div>
-            ))}
+            <button
+              onClick={registerPlayer}
+              style={{
+                ...btn,
+                width: "100%",
+                background: "#2563eb"
+              }}
+            >
+              Entrar
+            </button>
 
             <h3 style={{ marginTop: "25px" }}>🏆 Ranking</h3>
 
@@ -200,9 +243,15 @@ export default function MitoVerdad() {
           </>
         )}
 
+        {/* CATEGORY */}
         {screen === "category" && (
           <>
             <h2>Hola {active}</h2>
+
+            <p>
+              Categorías completadas: {playedCategories.length} /{" "}
+              {Object.keys(categories).length}
+            </p>
 
             <select
               value={cat}
@@ -214,9 +263,11 @@ export default function MitoVerdad() {
                 marginBottom: "20px"
               }}
             >
-              {Object.keys(categories).map((c) => (
-                <option key={c}>{c}</option>
-              ))}
+              {Object.keys(categories)
+                .filter((c) => !playedCategories.includes(c))
+                .map((c) => (
+                  <option key={c}>{c}</option>
+                ))}
             </select>
 
             <button
@@ -227,11 +278,12 @@ export default function MitoVerdad() {
                 background: "#16a34a"
               }}
             >
-              Empezar
+              Empezar Categoría
             </button>
           </>
         )}
 
+        {/* GAME */}
         {screen === "game" && (
           <>
             <div
@@ -278,13 +330,14 @@ export default function MitoVerdad() {
           </>
         )}
 
+        {/* RESULT */}
         {screen === "result" && (
           <>
-            <h2>🎉 Partida Terminada</h2>
+            <h2>🎉 Juego completado</h2>
             <h1>{pts} puntos</h1>
 
             <button
-              onClick={() => setScreen("home")}
+              onClick={() => setScreen("login")}
               style={{
                 ...btn,
                 width: "100%",

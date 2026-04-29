@@ -1,16 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
 
 /* =========================
-   SONIDOS AJUSTADOS
-   ========================= */
-
-/* correcto: suave */
+   SONIDOS
+========================= */
 const okSound = new Audio(
   "https://assets.mixkit.co/active_storage/sfx/270/270-preview.mp3"
 );
 okSound.volume = 0.35;
 
-/* error: corto y sutil */
 const badSound = new Audio(
   "https://assets.mixkit.co/active_storage/sfx/1114/1114-preview.mp3"
 );
@@ -18,8 +15,7 @@ badSound.volume = 0.18;
 
 /* =========================
    PREGUNTAS
-   ========================= */
-
+========================= */
 const categories = {
   Cultura: [
     { q: "La Gran Muralla China es visible desde el espacio.", a: false },
@@ -60,12 +56,15 @@ export default function MitoVerdad() {
   const [active, setActive] = useState("");
   const [screen, setScreen] = useState("login");
 
-  const [cat, setCat] = useState("Diseño");
+  /* CATEGORÍA ACTIVA REAL */
+  const [cat, setCat] = useState("");
   const [index, setIndex] = useState(0);
+
   const [pts, setPts] = useState(0);
   const [time, setTime] = useState(10);
   const [playedCategories, setPlayedCategories] = useState([]);
 
+  /* ranking */
   const ranking = useMemo(() => {
     return players
       .map((p) => ({
@@ -75,9 +74,11 @@ export default function MitoVerdad() {
       .sort((a, b) => b.score - a.score);
   }, [players, scores]);
 
-  const questions = categories[cat];
+  /* preguntas activas */
+  const questions = cat ? categories[cat] : [];
   const current = questions[index];
 
+  /* reloj */
   useEffect(() => {
     if (screen !== "game") return;
 
@@ -88,7 +89,11 @@ export default function MitoVerdad() {
 
     const t = setTimeout(() => setTime(time - 1), 1000);
     return () => clearTimeout(t);
-  }, [time, screen]);
+  }, [time, screen, index, cat]);
+
+  /* =========================
+     FUNCIONES
+  ========================= */
 
   function registerPlayer() {
     const clean = name.trim();
@@ -98,23 +103,32 @@ export default function MitoVerdad() {
       setPlayers([...players, clean]);
     }
 
-    startGame(clean);
+    startPlayer(clean);
     setName("");
   }
 
-  function startGame(player) {
+  function startPlayer(player) {
     setActive(player);
     setPts(0);
     setIndex(0);
     setTime(10);
     setPlayedCategories([]);
+    setCat("");
     setScreen("category");
   }
 
-  function choose(ans) {
+  function startCategory() {
+    if (!cat) return;
+
+    setIndex(0);
+    setTime(10);
+    setScreen("game");
+  }
+
+  function choose(answer) {
     let total = pts;
 
-    if (ans === current.a) {
+    if (answer === current.a) {
       okSound.currentTime = 0;
       okSound.play();
       total += 10;
@@ -125,7 +139,7 @@ export default function MitoVerdad() {
     }
 
     if (index < questions.length - 1) {
-      setIndex(index + 1);
+      setIndex((prev) => prev + 1);
       setTime(10);
     } else {
       finishCategory(total);
@@ -134,7 +148,7 @@ export default function MitoVerdad() {
 
   function nextQuestion() {
     if (index < questions.length - 1) {
-      setIndex(index + 1);
+      setIndex((prev) => prev + 1);
       setTime(10);
     } else {
       finishCategory(pts);
@@ -143,11 +157,11 @@ export default function MitoVerdad() {
 
   function finishCategory(totalPts) {
     const updated = [...playedCategories, cat];
-    setPlayedCategories(updated);
 
-    /* reset importante */
+    setPlayedCategories(updated);
     setIndex(0);
     setTime(10);
+    setCat("");
 
     if (updated.length === Object.keys(categories).length) {
       setScores({
@@ -167,13 +181,18 @@ export default function MitoVerdad() {
     setName("");
     setActive("");
     setScreen("login");
-    setPts(0);
+    setCat("");
     setIndex(0);
+    setPts(0);
     setTime(10);
     setPlayedCategories([]);
   }
 
   if (screen === "game" && !current) return null;
+
+  /* =========================
+     ESTILOS
+  ========================= */
 
   const page = {
     minHeight: "100vh",
@@ -201,6 +220,10 @@ export default function MitoVerdad() {
     fontWeight: "bold",
     cursor: "pointer"
   };
+
+  const available = Object.keys(categories).filter(
+    (c) => !playedCategories.includes(c)
+  );
 
   return (
     <div style={page}>
@@ -259,19 +282,17 @@ export default function MitoVerdad() {
                 marginBottom: "20px"
               }}
             >
-              {Object.keys(categories)
-                .filter((c) => !playedCategories.includes(c))
-                .map((c) => (
-                  <option key={c}>{c}</option>
-                ))}
+              <option value="">Selecciona categoría</option>
+
+              {available.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
             </select>
 
             <button
-              onClick={() => {
-                setIndex(0);
-                setTime(10);
-                setScreen("game");
-              }}
+              onClick={startCategory}
               style={{
                 ...btn,
                 width: "100%",

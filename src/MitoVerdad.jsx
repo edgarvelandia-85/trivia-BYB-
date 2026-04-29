@@ -1,17 +1,25 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-/* sonidos NUEVOS */
+/* =========================
+   SONIDOS AJUSTADOS
+   ========================= */
+
+/* correcto: suave */
 const okSound = new Audio(
   "https://assets.mixkit.co/active_storage/sfx/270/270-preview.mp3"
 );
 okSound.volume = 0.35;
 
+/* error: corto y sutil */
 const badSound = new Audio(
-  "https://assets.mixkit.co/active_storage/sfx/2958/2958-preview.mp3"
+  "https://assets.mixkit.co/active_storage/sfx/1114/1114-preview.mp3"
 );
-badSound.volume = 0.25;
+badSound.volume = 0.18;
 
-/* preguntas */
+/* =========================
+   PREGUNTAS
+   ========================= */
+
 const categories = {
   Cultura: [
     { q: "La Gran Muralla China es visible desde el espacio.", a: false },
@@ -137,6 +145,10 @@ export default function MitoVerdad() {
     const updated = [...playedCategories, cat];
     setPlayedCategories(updated);
 
+    /* reset importante */
+    setIndex(0);
+    setTime(10);
+
     if (updated.length === Object.keys(categories).length) {
       setScores({
         ...scores,
@@ -160,6 +172,8 @@ export default function MitoVerdad() {
     setTime(10);
     setPlayedCategories([]);
   }
+
+  if (screen === "game" && !current) return null;
 
   const page = {
     minHeight: "100vh",
@@ -195,6 +209,7 @@ export default function MitoVerdad() {
           ⚡ Mito o Verdad
         </h1>
 
+        {/* LOGIN */}
         {screen === "login" && (
           <>
             <h2>Registrar jugador</h2>
@@ -216,8 +231,7 @@ export default function MitoVerdad() {
               style={{
                 ...btn,
                 width: "100%",
-                background: "#2563eb",
-                marginBottom: "15px"
+                background: "#2563eb"
               }}
             >
               Entrar a jugar
@@ -225,6 +239,7 @@ export default function MitoVerdad() {
           </>
         )}
 
+        {/* CATEGORÍAS */}
         {screen === "category" && (
           <>
             <h2>Hola {active}</h2>
@@ -268,6 +283,7 @@ export default function MitoVerdad() {
           </>
         )}
 
+        {/* JUEGO */}
         {screen === "game" && (
           <>
             <div
@@ -314,6 +330,7 @@ export default function MitoVerdad() {
           </>
         )}
 
+        {/* RESULTADOS */}
         {screen === "result" && (
           <>
             <h2>🏆 Resultados de la sesión</h2>

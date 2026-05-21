@@ -2,7 +2,6 @@ import React, { useState } from "react";
 
 import Trivia from "./Trivia";
 import MitoVerdad from "./MitoVerdad";
-import MemoryBYB from "./MemoryBYB";
 import MemoryOnline from "./MemoryOnline";
 
 export default function App() {
@@ -12,8 +11,7 @@ export default function App() {
 
   if (game === "mito") return <MitoVerdad />;
 
-  if (game === "memory") return <MemoryBYB />;
-
+  
   if (game === "online")
     return <MemoryOnline />;
 
@@ -81,14 +79,7 @@ export default function App() {
           ⚡ Mito o Verdad
         </button>
 
-        {/* MEMORY LOCAL */}
-        <button
-          onClick={() => setGame("memory")}
-          style={button("#06b6d4")}
-        >
-          🧩 Memory BYB
-        </button>
-
+        
         {/* ONLINE */}
         <button
           onClick={() => setGame("online")}

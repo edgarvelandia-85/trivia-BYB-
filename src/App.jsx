@@ -1,45 +1,53 @@
 import React, { useState } from "react";
+
 import Trivia from "./Trivia";
 import MitoVerdad from "./MitoVerdad";
 import MemoryBYB from "./MemoryBYB";
+import MemoryOnline from "./MemoryOnline";
 
 export default function App() {
   const [game, setGame] = useState("");
 
   if (game === "trivia") return <Trivia />;
+
   if (game === "mito") return <MitoVerdad />;
+
   if (game === "memory") return <MemoryBYB />;
+
+  if (game === "online")
+    return <MemoryOnline />;
 
   return (
     <div
       style={{
         minHeight: "100vh",
         background:
-          "linear-gradient(135deg,#050816,#0f172a,#111827)",
-        color: "white",
+          "linear-gradient(135deg,#020617,#0f172a,#111827)",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        padding: "20px",
         fontFamily: "Arial",
-        padding: "20px"
+        color: "white"
       }}
     >
       <div
         style={{
-          background: "rgba(255,255,255,0.05)",
-          border:
-            "1px solid rgba(255,255,255,0.1)",
-          padding: "40px",
-          borderRadius: "20px",
           width: "100%",
-          maxWidth: "450px",
-          textAlign: "center",
+          maxWidth: "500px",
+          background:
+            "rgba(255,255,255,0.05)",
+          border:
+            "1px solid rgba(255,255,255,0.08)",
+          borderRadius: "24px",
+          padding: "35px",
           boxShadow:
-            "0 0 25px rgba(0,255,255,0.15)"
+            "0 0 25px rgba(0,255,255,.08)"
         }}
       >
         <h1
           style={{
+            textAlign: "center",
             color: "#00ffff",
             marginBottom: "10px"
           }}
@@ -49,6 +57,7 @@ export default function App() {
 
         <p
           style={{
+            textAlign: "center",
             opacity: 0.8,
             marginBottom: "30px"
           }}
@@ -59,59 +68,53 @@ export default function App() {
         {/* TRIVIA */}
         <button
           onClick={() => setGame("trivia")}
-          style={{
-            width: "100%",
-            padding: "14px",
-            borderRadius: "12px",
-            border: "none",
-            cursor: "pointer",
-            fontWeight: "bold",
-            background: "#2563eb",
-            color: "white",
-            marginBottom: "12px",
-            fontSize: "16px"
-          }}
+          style={button("#2563eb")}
         >
           🧠 Trivia
         </button>
 
-        {/* MITO O VERDAD */}
+        {/* MITO */}
         <button
           onClick={() => setGame("mito")}
-          style={{
-            width: "100%",
-            padding: "14px",
-            borderRadius: "12px",
-            border: "none",
-            cursor: "pointer",
-            fontWeight: "bold",
-            background: "#7c3aed",
-            color: "white",
-            marginBottom: "12px",
-            fontSize: "16px"
-          }}
+          style={button("#7c3aed")}
         >
           ⚡ Mito o Verdad
         </button>
 
-        {/* MEMORY */}
+        {/* MEMORY LOCAL */}
         <button
           onClick={() => setGame("memory")}
-          style={{
-            width: "100%",
-            padding: "14px",
-            borderRadius: "12px",
-            border: "none",
-            cursor: "pointer",
-            fontWeight: "bold",
-            background: "#06b6d4",
-            color: "white",
-            fontSize: "16px"
-          }}
+          style={button("#06b6d4")}
         >
           🧩 Memory BYB
+        </button>
+
+        {/* ONLINE */}
+        <button
+          onClick={() => setGame("online")}
+          style={button("#10b981")}
+        >
+          🌐 Memory Online
         </button>
       </div>
     </div>
   );
+}
+
+/* estilos botones */
+
+function button(color) {
+  return {
+    width: "100%",
+    padding: "15px",
+    marginBottom: "14px",
+    border: "none",
+    borderRadius: "14px",
+    background: color,
+    color: "white",
+    fontWeight: "bold",
+    fontSize: "16px",
+    cursor: "pointer",
+    transition: "0.3s"
+  };
 }

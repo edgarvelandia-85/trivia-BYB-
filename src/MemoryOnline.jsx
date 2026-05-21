@@ -12,14 +12,14 @@ import {
 import { db } from "./firebase";
 
 const products = [
-  "SEO",
-  "BRANDING",
-  "WEB",
-  "ADS",
-  "CRM",
-  "IA",
-  "SOCIAL",
-  "FUNNEL"
+  "🎨 Manual de Marca",
+  "✨ Diseño de Marca",
+  "📱 Manejo de Redes",
+  "🎥 Reels",
+  "🌐 Desarrollo Web",
+  "🚀 Publicidad ADS",
+  "🤖 Automatización IA",
+  "📸 Fotografía"
 ];
 
 function shuffle(array) {
@@ -46,7 +46,34 @@ export default function MemoryOnline() {
   const [roomId, setRoomId] = useState("");
   const [room, setRoom] = useState(null);
 
+  // =========================
+  // SONIDOS
+  // =========================
+
+  function playSuccess() {
+    const audio = new Audio(
+      "https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"
+    );
+
+    audio.volume = 0.2;
+
+    audio.play();
+  }
+
+  function playFail() {
+    const audio = new Audio(
+      "https://actions.google.com/sounds/v1/cartoon/pop.ogg"
+    );
+
+    audio.volume = 0.1;
+
+    audio.play();
+  }
+
+  // =========================
   // CREAR SALA
+  // =========================
+
   async function createRoom() {
     if (!playerName) {
       alert("Escribe tu nombre");
@@ -74,7 +101,6 @@ export default function MemoryOnline() {
 
     setRoomId(roomRef.id);
 
-    // HOST SOLO OBSERVA
     setRoom({
       host: playerName,
       players: [],
@@ -87,7 +113,10 @@ export default function MemoryOnline() {
     });
   }
 
+  // =========================
   // UNIRSE
+  // =========================
+
   async function joinRoom() {
     if (!playerName || !roomIdInput) {
       alert("Completa nombre y código");
@@ -104,6 +133,16 @@ export default function MemoryOnline() {
     }
 
     const data = snap.data();
+
+    // EVITAR NOMBRES DUPLICADOS
+    if (
+      data.players.some(
+        (p) => p.name === playerName
+      )
+    ) {
+      alert("Ese nombre ya está en uso");
+      return;
+    }
 
     if (data.players.length >= 2) {
       alert("Sala llena");
@@ -126,7 +165,10 @@ export default function MemoryOnline() {
     setRoomId(roomIdInput);
   }
 
-  // TIEMPO REAL
+  // =========================
+  // REALTIME
+  // =========================
+
   useEffect(() => {
     if (!roomId) return;
 
@@ -139,7 +181,10 @@ export default function MemoryOnline() {
     return () => unsub();
   }, [roomId]);
 
+  // =========================
   // VOLTEAR CARTA
+  // =========================
+
   async function flipCard(card) {
     if (!room) return;
 
@@ -182,12 +227,20 @@ export default function MemoryOnline() {
 
         let turn = fresh.turn;
 
+        // ACIERTO
         if (cardA.value === cardB.value) {
+          playSuccess();
+
           cardA.matched = true;
           cardB.matched = true;
 
           players[turn].score += 1;
-        } else {
+        }
+
+        // ERROR
+        else {
+          playFail();
+
           cardA.flipped = false;
           cardB.flipped = false;
 
@@ -216,21 +269,28 @@ export default function MemoryOnline() {
           finished,
           winner
         });
-      }, 1000);
+      }, 800);
     }
   }
 
-  // MENÚ
+  // =========================
+  // MENU
+  // =========================
+
   if (!roomId) {
     return (
       <div style={styles.container}>
         <div style={styles.card}>
-          <h1 style={styles.title}>🌐 Memory BYB Online</h1>
+          <h1 style={styles.title}>
+            🌐 Memory BYB Online
+          </h1>
 
           <input
             placeholder="Tu nombre"
             value={playerName}
-            onChange={(e) => setPlayerName(e.target.value)}
+            onChange={(e) =>
+              setPlayerName(e.target.value)
+            }
             style={styles.input}
           />
 
@@ -244,7 +304,9 @@ export default function MemoryOnline() {
           <input
             placeholder="Código de sala"
             value={roomIdInput}
-            onChange={(e) => setRoomIdInput(e.target.value)}
+            onChange={(e) =>
+              setRoomIdInput(e.target.value)
+            }
             style={styles.input}
           />
 
@@ -259,7 +321,10 @@ export default function MemoryOnline() {
     );
   }
 
-  // ESPERANDO JUGADORES
+  // =========================
+  // ESPERANDO
+  // =========================
+
   if (!room || !room.started) {
     return (
       <div style={styles.container}>
@@ -288,11 +353,16 @@ export default function MemoryOnline() {
     );
   }
 
+  // =========================
   // JUEGO
+  // =========================
+
   return (
     <div style={styles.container}>
       <div style={styles.game}>
-        <h1 style={styles.title}>🧠 Memory BYB</h1>
+        <h1 style={styles.title}>
+          🧠 Memory BYB
+        </h1>
 
         <div style={styles.info}>
           {room.players.map((p, i) => (
@@ -359,7 +429,8 @@ const styles = {
     borderRadius: 25,
     width: 400,
     maxWidth: "95%",
-    boxShadow: "0 0 25px rgba(0,255,255,0.2)"
+    boxShadow:
+      "0 0 25px rgba(0,255,255,0.2)"
   },
 
   game: {
@@ -429,7 +500,6 @@ const styles = {
 
   memoryCard: {
     aspectRatio: "1",
-    background: "#1e293b",
     borderRadius: 20,
     display: "flex",
     justifyContent: "center",
@@ -437,7 +507,9 @@ const styles = {
     color: "#000",
     fontWeight: "bold",
     cursor: "pointer",
-    fontSize: 18
+    fontSize: 14,
+    textAlign: "center",
+    padding: 10
   },
 
   winner: {

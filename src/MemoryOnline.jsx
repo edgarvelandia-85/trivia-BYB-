@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+
 import {
   collection,
   addDoc,
@@ -45,9 +46,12 @@ export default function MemoryOnline() {
   const [roomId, setRoomId] = useState("");
   const [room, setRoom] = useState(null);
 
-  // HOST CREATE ROOM
+  // CREAR SALA
   async function createRoom() {
-    if (!playerName) return;
+    if (!playerName) {
+      alert("Escribe tu nombre");
+      return;
+    }
 
     const roomRef = await addDoc(collection(db, "rooms"), {
       host: playerName,
@@ -70,7 +74,7 @@ export default function MemoryOnline() {
 
     setRoomId(roomRef.id);
 
-    // SOLO OBSERVADOR
+    // HOST SOLO OBSERVA
     setRoom({
       host: playerName,
       players: [],
@@ -83,9 +87,12 @@ export default function MemoryOnline() {
     });
   }
 
-  // JOIN ROOM
+  // UNIRSE
   async function joinRoom() {
-    if (!playerName || !roomIdInput) return;
+    if (!playerName || !roomIdInput) {
+      alert("Completa nombre y código");
+      return;
+    }
 
     const roomRef = doc(db, "rooms", roomIdInput);
 
@@ -119,7 +126,7 @@ export default function MemoryOnline() {
     setRoomId(roomIdInput);
   }
 
-  // REALTIME
+  // TIEMPO REAL
   useEffect(() => {
     if (!roomId) return;
 
@@ -132,7 +139,7 @@ export default function MemoryOnline() {
     return () => unsub();
   }, [roomId]);
 
-  // CARD CLICK
+  // VOLTEAR CARTA
   async function flipCard(card) {
     if (!room) return;
 
@@ -157,7 +164,7 @@ export default function MemoryOnline() {
       selected
     });
 
-    // CHECK PAIR
+    // VALIDAR PAREJA
     if (selected.length === 2) {
       setTimeout(async () => {
         const freshSnap = await getDoc(roomRef);
@@ -191,7 +198,7 @@ export default function MemoryOnline() {
 
         let winner = "";
 
-        if (finished) {
+        if (finished && players.length >= 2) {
           if (players[0].score > players[1].score) {
             winner = players[0].name;
           } else if (players[1].score > players[0].score) {
@@ -213,7 +220,7 @@ export default function MemoryOnline() {
     }
   }
 
-  // MENU
+  // MENÚ
   if (!roomId) {
     return (
       <div style={styles.container}>
@@ -227,7 +234,10 @@ export default function MemoryOnline() {
             style={styles.input}
           />
 
-          <button style={styles.createBtn} onClick={createRoom}>
+          <button
+            style={styles.createBtn}
+            onClick={createRoom}
+          >
             👑 Crear Sala
           </button>
 
@@ -238,7 +248,10 @@ export default function MemoryOnline() {
             style={styles.input}
           />
 
-          <button style={styles.joinBtn} onClick={joinRoom}>
+          <button
+            style={styles.joinBtn}
+            onClick={joinRoom}
+          >
             🎮 Unirse
           </button>
         </div>
@@ -246,12 +259,14 @@ export default function MemoryOnline() {
     );
   }
 
-  // WAITING
+  // ESPERANDO JUGADORES
   if (!room || !room.started) {
     return (
       <div style={styles.container}>
         <div style={styles.card}>
-          <h1 style={styles.title}>⏳ Esperando jugadores...</h1>
+          <h1 style={styles.title}>
+            ⏳ Esperando jugadores...
+          </h1>
 
           <h2 style={{ color: "#fff" }}>
             Código:
@@ -273,6 +288,7 @@ export default function MemoryOnline() {
     );
   }
 
+  // JUEGO
   return (
     <div style={styles.container}>
       <div style={styles.game}>
@@ -291,6 +307,7 @@ export default function MemoryOnline() {
               }}
             >
               <h3>{p.name}</h3>
+
               <p>{p.score} pts</p>
             </div>
           ))}
@@ -315,7 +332,9 @@ export default function MemoryOnline() {
               }}
               onClick={() => flipCard(card)}
             >
-              {card.flipped || card.matched ? card.value : "?"}
+              {card.flipped || card.matched
+                ? card.value
+                : "?"}
             </div>
           ))}
         </div>

@@ -11,20 +11,22 @@ import {
 import { db } from "./firebase";
 
 const services = [
-  "Branding",
-  "Marketing",
-  "Diseño",
-  "Contenido",
-  "Redes",
-  "Publicidad",
-  "Estrategia",
-  "SEO"
+  "📈 Marketing",
+  "🎯 Estrategia",
+  "🎨 Branding",
+  "📱 Redes",
+  "🌐 Web",
+  "📘 Manual",
+  "🧩 Plantillas",
+  "🧪 Fórmulas"
 ];
 
+/* mezclar cartas */
 function shuffle(array) {
   return [...array].sort(() => Math.random() - 0.5);
 }
 
+/* crear tablero */
 function generateCards() {
   return shuffle(
     [...services, ...services].map((item, index) => ({
@@ -39,121 +41,157 @@ function generateCards() {
 export default function MemoryOnline() {
   const [playerName, setPlayerName] = useState("");
   const [roomId, setRoomId] = useState("");
-  const [currentRoom, setCurrentRoom] = useState(null);
-  const [joinRoom, setJoinRoom] = useState("");
+  const [joinCode, setJoinCode] = useState("");
+  const [room, setRoom] = useState(null);
+
   const [loading, setLoading] = useState(false);
 
-  // CREAR SALA
-  const createRoom = async () => {
-    if (!playerName) return;
+  /* =========================
+     CREAR SALA (HOST)
+  ========================= */
 
-    const room = await addDoc(collection(db, "rooms"), {
-      players: [
-        {
-          name: playerName,
-          score: 0
-        }
-      ],
-      turn: 0,
-      cards: generateCards(),
-      selected: [],
-      started: false,
-      winner: "",
-      finished: false
-    });
+  async function createRoom() {
+    if (!playerName.trim()) return;
 
-    setRoomId(room.id);
-  };
+    const roomRef = await addDoc(
+      collection(db, "rooms"),
+      {
+        host: playerName,
 
-  // UNIRSE
-  const enterRoom = async () => {
-    if (!playerName || !joinRoom) return;
+        players: [],
 
-    const roomRef = doc(db, "rooms", joinRoom);
-    const roomSnap = await getDoc(roomRef);
+        turn: 0,
 
-    if (!roomSnap.exists()) {
+        cards: generateCards(),
+
+        selected: [],
+
+        started: false,
+
+        finished: false,
+
+        winner: ""
+      }
+    );
+
+    setRoomId(roomRef.id);
+  }
+
+  /* =========================
+     UNIRSE
+  ========================= */
+
+  async function joinRoom() {
+    if (!playerName.trim()) return;
+    if (!joinCode.trim()) return;
+
+    const roomRef = doc(db, "rooms", joinCode);
+
+    const snap = await getDoc(roomRef);
+
+    if (!snap.exists()) {
       alert("Sala no encontrada");
       return;
     }
 
-    const data = roomSnap.data();
+    const data = snap.data();
 
     if (data.players.length >= 2) {
       alert("Sala llena");
       return;
     }
 
+    const updatedPlayers = [
+      ...data.players,
+      {
+        name: playerName,
+        score: 0
+      }
+    ];
+
     await updateDoc(roomRef, {
-      players: [
-        ...data.players,
-        {
-          name: playerName,
-          score: 0
-        }
-      ],
-      started: true
+      players: updatedPlayers,
+      started: updatedPlayers.length === 2
     });
 
-    setRoomId(joinRoom);
-  };
+    setRoomId(joinCode);
+  }
 
-  // ESCUCHAR CAMBIOS
+  /* =========================
+     ESCUCHAR CAMBIOS
+  ========================= */
+
   useEffect(() => {
     if (!roomId) return;
 
-    const unsub = onSnapshot(doc(db, "rooms", roomId), (snap) => {
-      if (snap.exists()) {
-        setCurrentRoom({
-          id: snap.id,
-          ...snap.data()
-        });
+    const unsub = onSnapshot(
+      doc(db, "rooms", roomId),
+      (snap) => {
+        if (snap.exists()) {
+          setRoom({
+            id: snap.id,
+            ...snap.data()
+          });
+        }
       }
-    });
+    );
 
     return () => unsub();
   }, [roomId]);
 
-  // VOLTEAR CARTA
-  const flipCard = async (index) => {
-    if (!currentRoom) return;
+  /* =========================
+     VOLTEAR CARTAS
+  ========================= */
 
-    if (currentRoom.finished) return;
+  async function flipCard(index) {
+    if (!room) return;
 
-    const cards = [...currentRoom.cards];
+    if (loading) return;
 
-    if (cards[index].flipped || cards[index].matched) return;
+    if (!room.started) return;
 
-    if (currentRoom.selected.length >= 2) return;
+    if (room.finished) return;
+
+    const cards = [...room.cards];
+
+    if (cards[index].flipped) return;
+
+    if (cards[index].matched) return;
+
+    if (room.selected.length >= 2) return;
 
     cards[index].flipped = true;
 
-    const selected = [...currentRoom.selected, index];
+    const selected = [...room.selected, index];
 
     await updateDoc(doc(db, "rooms", roomId), {
       cards,
       selected
     });
 
-    // VALIDAR
+    /* comparar */
+
     if (selected.length === 2) {
       setLoading(true);
 
       setTimeout(async () => {
         const roomRef = doc(db, "rooms", roomId);
+
         const snap = await getDoc(roomRef);
 
         const updated = snap.data();
 
         const updatedCards = [...updated.cards];
 
-        const [a, b] = updated.selected;
-
         const players = [...updated.players];
 
-        if (
-          updatedCards[a].name === updatedCards[b].name
-        ) {
+        const [a, b] = updated.selected;
+
+        const match =
+          updatedCards[a].name ===
+          updatedCards[b].name;
+
+        if (match) {
           updatedCards[a].matched = true;
           updatedCards[b].matched = true;
 
@@ -183,55 +221,64 @@ export default function MemoryOnline() {
 
         await updateDoc(roomRef, {
           cards: updatedCards,
+
           selected: [],
+
           players,
-          turn:
-            updatedCards[a].name === updatedCards[b].name
-              ? updated.turn
-              : updated.turn === 0
-              ? 1
-              : 0,
+
+          turn: match
+            ? updated.turn
+            : updated.turn === 0
+            ? 1
+            : 0,
+
           finished,
+
           winner
         });
 
         setLoading(false);
       }, 1200);
     }
+  }
+
+  /* =========================
+     ESTILOS
+  ========================= */
+
+  const page = {
+    minHeight: "100vh",
+    background:
+      "linear-gradient(135deg,#020617,#0f172a,#111827)",
+    color: "white",
+    padding: "20px",
+    fontFamily: "Arial"
   };
 
-  // PANTALLA INICIAL
+  const panel = {
+    background: "rgba(255,255,255,.05)",
+    border:
+      "1px solid rgba(255,255,255,.08)",
+    borderRadius: "24px",
+    padding: "30px",
+    maxWidth: "900px",
+    margin: "0 auto",
+    boxShadow:
+      "0 0 25px rgba(0,255,255,.08)"
+  };
+
+  /* =========================
+     LOGIN
+  ========================= */
+
   if (!roomId) {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          background:
-            "linear-gradient(135deg,#020617,#0f172a,#111827)",
-          color: "white",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "20px",
-          fontFamily: "Arial"
-        }}
-      >
-        <div
-          style={{
-            background: "rgba(255,255,255,0.05)",
-            padding: "35px",
-            borderRadius: "20px",
-            width: "100%",
-            maxWidth: "420px",
-            border:
-              "1px solid rgba(255,255,255,0.1)"
-          }}
-        >
+      <div style={page}>
+        <div style={panel}>
           <h1
             style={{
               textAlign: "center",
-              color: "#00ffff",
-              marginBottom: "25px"
+              color: "#00ffff"
             }}
           >
             🌐 Memory BYB Online
@@ -246,7 +293,7 @@ export default function MemoryOnline() {
             style={{
               width: "100%",
               padding: "14px",
-              borderRadius: "10px",
+              borderRadius: "12px",
               border: "none",
               marginBottom: "15px"
             }}
@@ -257,7 +304,7 @@ export default function MemoryOnline() {
             style={{
               width: "100%",
               padding: "14px",
-              borderRadius: "10px",
+              borderRadius: "12px",
               border: "none",
               background: "#06b6d4",
               color: "white",
@@ -266,30 +313,30 @@ export default function MemoryOnline() {
               marginBottom: "25px"
             }}
           >
-            Crear Sala
+            👑 Crear Sala
           </button>
 
           <input
             placeholder="Código de sala"
-            value={joinRoom}
+            value={joinCode}
             onChange={(e) =>
-              setJoinRoom(e.target.value)
+              setJoinCode(e.target.value)
             }
             style={{
               width: "100%",
               padding: "14px",
-              borderRadius: "10px",
+              borderRadius: "12px",
               border: "none",
               marginBottom: "15px"
             }}
           />
 
           <button
-            onClick={enterRoom}
+            onClick={joinRoom}
             style={{
               width: "100%",
               padding: "14px",
-              borderRadius: "10px",
+              borderRadius: "12px",
               border: "none",
               background: "#7c3aed",
               color: "white",
@@ -297,150 +344,186 @@ export default function MemoryOnline() {
               cursor: "pointer"
             }}
           >
-            Unirse
+            🎮 Unirse
           </button>
         </div>
       </div>
     );
   }
 
-  // ESPERANDO
-  if (!currentRoom || !currentRoom.started) {
+  /* =========================
+     ESPERANDO JUGADORES
+  ========================= */
+
+  if (!room || !room.started) {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          background: "#020617",
-          color: "white",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          flexDirection: "column",
-          fontFamily: "Arial"
-        }}
-      >
-        <h1>🎮 Sala creada</h1>
+      <div style={page}>
+        <div style={panel}>
+          <h1
+            style={{
+              textAlign: "center",
+              color: "#00ffff"
+            }}
+          >
+            👑 Sala creada
+          </h1>
 
-        <h2
-          style={{
-            color: "#00ffff"
-          }}
-        >
-          {roomId}
-        </h2>
+          <h2
+            style={{
+              textAlign: "center",
+              marginTop: "20px"
+            }}
+          >
+            Código:
+          </h2>
 
-        <p>Esperando segundo jugador...</p>
+          <h1
+            style={{
+              textAlign: "center",
+              color: "#00ffff",
+              letterSpacing: "3px"
+            }}
+          >
+            {roomId}
+          </h1>
+
+          <p
+            style={{
+              textAlign: "center",
+              marginTop: "20px"
+            }}
+          >
+            Esperando 2 jugadoras...
+          </p>
+        </div>
       </div>
     );
   }
 
+  /* =========================
+     JUEGO
+  ========================= */
+
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background:
-          "linear-gradient(135deg,#020617,#0f172a,#111827)",
-        color: "white",
-        padding: "20px",
-        fontFamily: "Arial"
-      }}
-    >
-      <h1
-        style={{
-          textAlign: "center",
-          color: "#00ffff"
-        }}
-      >
-        🌐 Memory BYB Online
-      </h1>
-
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          maxWidth: "700px",
-          margin: "20px auto"
-        }}
-      >
-        {currentRoom.players.map((p, i) => (
-          <div
-            key={i}
-            style={{
-              background:
-                currentRoom.turn === i
-                  ? "#06b6d4"
-                  : "rgba(255,255,255,0.08)",
-              padding: "12px 18px",
-              borderRadius: "12px"
-            }}
-          >
-            <strong>{p.name}</strong>
-            <div>{p.score} parejas</div>
-          </div>
-        ))}
-      </div>
-
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns:
-            "repeat(4, 1fr)",
-          gap: "12px",
-          maxWidth: "700px",
-          margin: "30px auto"
-        }}
-      >
-        {currentRoom.cards.map((card, index) => (
-          <div
-            key={card.id}
-            onClick={() =>
-              !loading && flipCard(index)
-            }
-            style={{
-              height: "110px",
-              borderRadius: "14px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              cursor: "pointer",
-              fontWeight: "bold",
-              fontSize: "14px",
-              textAlign: "center",
-              padding: "10px",
-              transition: "0.3s",
-              background:
-                card.flipped || card.matched
-                  ? "#06b6d4"
-                  : "#1e293b"
-            }}
-          >
-            {card.flipped || card.matched
-              ? card.name
-              : "?"}
-          </div>
-        ))}
-      </div>
-
-      {currentRoom.finished && (
-        <div
+    <div style={page}>
+      <div style={panel}>
+        <h1
           style={{
             textAlign: "center",
-            marginTop: "30px"
+            color: "#00ffff"
           }}
         >
-          <h1>🏆</h1>
+          🌐 Memory BYB Online
+        </h1>
 
-          <h2
+        {/* HOST */}
+        <p
+          style={{
+            textAlign: "center",
+            opacity: 0.8
+          }}
+        >
+          👑 Host: {room.host}
+        </p>
+
+        {/* SCORE */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            gap: "15px",
+            marginTop: "25px",
+            marginBottom: "30px",
+            flexWrap: "wrap"
+          }}
+        >
+          {room.players.map((p, i) => (
+            <div
+              key={i}
+              style={{
+                flex: 1,
+                minWidth: "180px",
+                background:
+                  room.turn === i
+                    ? "#06b6d4"
+                    : "rgba(255,255,255,.06)",
+                padding: "16px",
+                borderRadius: "16px",
+                textAlign: "center"
+              }}
+            >
+              <h3>{p.name}</h3>
+
+              <p>{p.score} parejas</p>
+
+              {room.turn === i && (
+                <strong>🎯 Turno</strong>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* TABLERO */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns:
+              "repeat(4,1fr)",
+            gap: "12px"
+          }}
+        >
+          {room.cards.map((card, index) => (
+            <div
+              key={card.id}
+              onClick={() =>
+                !loading && flipCard(index)
+              }
+              style={{
+                height: "110px",
+                borderRadius: "16px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                textAlign: "center",
+                cursor: "pointer",
+                padding: "10px",
+                fontWeight: "bold",
+                transition: "0.3s",
+                background:
+                  card.flipped || card.matched
+                    ? "#06b6d4"
+                    : "#1e293b"
+              }}
+            >
+              {card.flipped || card.matched
+                ? card.name
+                : "✦"}
+            </div>
+          ))}
+        </div>
+
+        {/* FINAL */}
+        {room.finished && (
+          <div
             style={{
-              color: "#00ffff"
+              textAlign: "center",
+              marginTop: "35px"
             }}
           >
-            {currentRoom.winner === "Empate"
-              ? "Empate"
-              : `Ganó ${currentRoom.winner}`}
-          </h2>
-        </div>
-      )}
+            <h1>🏆</h1>
+
+            <h2
+              style={{
+                color: "#00ffff"
+              }}
+            >
+              {room.winner === "Empate"
+                ? "Empate"
+                : `Ganó ${room.winner}`}
+            </h2>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

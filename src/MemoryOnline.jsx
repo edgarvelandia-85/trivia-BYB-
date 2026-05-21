@@ -1,37 +1,37 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   collection,
   addDoc,
   doc,
-  getDoc,
   onSnapshot,
-  updateDoc
+  updateDoc,
+  getDoc
 } from "firebase/firestore";
 
 import { db } from "./firebase";
 
-const services = [
-  "📈 Marketing",
-  "🎯 Estrategia",
-  "🎨 Branding",
-  "📱 Redes",
-  "🌐 Web",
-  "📘 Manual",
-  "🧩 Plantillas",
-  "🧪 Fórmulas"
+const products = [
+  "SEO",
+  "BRANDING",
+  "WEB",
+  "ADS",
+  "CRM",
+  "IA",
+  "SOCIAL",
+  "FUNNEL"
 ];
 
-/* mezclar cartas */
 function shuffle(array) {
   return [...array].sort(() => Math.random() - 0.5);
 }
 
-/* crear tablero */
 function generateCards() {
+  const duplicated = [...products, ...products];
+
   return shuffle(
-    [...services, ...services].map((item, index) => ({
+    duplicated.map((item, index) => ({
       id: index,
-      name: item,
+      value: item,
       flipped: false,
       matched: false
     }))
@@ -40,57 +40,59 @@ function generateCards() {
 
 export default function MemoryOnline() {
   const [playerName, setPlayerName] = useState("");
+  const [roomIdInput, setRoomIdInput] = useState("");
+
   const [roomId, setRoomId] = useState("");
-  const [joinCode, setJoinCode] = useState("");
   const [room, setRoom] = useState(null);
 
-  const [loading, setLoading] = useState(false);
-
-  /* =========================
-     CREAR SALA (HOST)
-  ========================= */
-
+  // HOST CREATE ROOM
   async function createRoom() {
-    if (!playerName.trim()) return;
+    if (!playerName) return;
 
-    const roomRef = await addDoc(
-      collection(db, "rooms"),
-      {
-        host: playerName,
+    const roomRef = await addDoc(collection(db, "rooms"), {
+      host: playerName,
 
-        players: [],
+      // HOST NO JUEGA
+      players: [],
 
-        turn: 0,
+      turn: 0,
 
-        cards: generateCards(),
+      cards: generateCards(),
 
-        selected: [],
+      selected: [],
 
-        started: false,
+      started: false,
 
-        finished: false,
+      finished: false,
 
-        winner: ""
-      }
-    );
+      winner: ""
+    });
 
     setRoomId(roomRef.id);
+
+    // SOLO OBSERVADOR
+    setRoom({
+      host: playerName,
+      players: [],
+      turn: 0,
+      cards: [],
+      selected: [],
+      started: false,
+      finished: false,
+      winner: ""
+    });
   }
 
-  /* =========================
-     UNIRSE
-  ========================= */
-
+  // JOIN ROOM
   async function joinRoom() {
-    if (!playerName.trim()) return;
-    if (!joinCode.trim()) return;
+    if (!playerName || !roomIdInput) return;
 
-    const roomRef = doc(db, "rooms", joinCode);
+    const roomRef = doc(db, "rooms", roomIdInput);
 
     const snap = await getDoc(roomRef);
 
     if (!snap.exists()) {
-      alert("Sala no encontrada");
+      alert("Sala no existe");
       return;
     }
 
@@ -114,105 +116,85 @@ export default function MemoryOnline() {
       started: updatedPlayers.length === 2
     });
 
-    setRoomId(joinCode);
+    setRoomId(roomIdInput);
   }
 
-  /* =========================
-     ESCUCHAR CAMBIOS
-  ========================= */
-
+  // REALTIME
   useEffect(() => {
     if (!roomId) return;
 
-    const unsub = onSnapshot(
-      doc(db, "rooms", roomId),
-      (snap) => {
-        if (snap.exists()) {
-          setRoom({
-            id: snap.id,
-            ...snap.data()
-          });
-        }
+    const unsub = onSnapshot(doc(db, "rooms", roomId), (snap) => {
+      if (snap.exists()) {
+        setRoom(snap.data());
       }
-    );
+    });
 
     return () => unsub();
   }, [roomId]);
 
-  /* =========================
-     VOLTEAR CARTAS
-  ========================= */
-
-  async function flipCard(index) {
+  // CARD CLICK
+  async function flipCard(card) {
     if (!room) return;
-
-    if (loading) return;
 
     if (!room.started) return;
 
-    if (room.finished) return;
-
-    const cards = [...room.cards];
-
-    if (cards[index].flipped) return;
-
-    if (cards[index].matched) return;
+    if (card.flipped || card.matched) return;
 
     if (room.selected.length >= 2) return;
 
+    const roomRef = doc(db, "rooms", roomId);
+
+    const cards = [...room.cards];
+
+    const index = cards.findIndex((c) => c.id === card.id);
+
     cards[index].flipped = true;
 
-    const selected = [...room.selected, index];
+    const selected = [...room.selected, card.id];
 
-    await updateDoc(doc(db, "rooms", roomId), {
+    await updateDoc(roomRef, {
       cards,
       selected
     });
 
-    /* comparar */
-
+    // CHECK PAIR
     if (selected.length === 2) {
-      setLoading(true);
-
       setTimeout(async () => {
-        const roomRef = doc(db, "rooms", roomId);
+        const freshSnap = await getDoc(roomRef);
 
-        const snap = await getDoc(roomRef);
+        const fresh = freshSnap.data();
 
-        const updated = snap.data();
+        const freshCards = [...fresh.cards];
 
-        const updatedCards = [...updated.cards];
+        const [a, b] = fresh.selected;
 
-        const players = [...updated.players];
+        const cardA = freshCards.find((c) => c.id === a);
+        const cardB = freshCards.find((c) => c.id === b);
 
-        const [a, b] = updated.selected;
+        let players = [...fresh.players];
 
-        const match =
-          updatedCards[a].name ===
-          updatedCards[b].name;
+        let turn = fresh.turn;
 
-        if (match) {
-          updatedCards[a].matched = true;
-          updatedCards[b].matched = true;
+        if (cardA.value === cardB.value) {
+          cardA.matched = true;
+          cardB.matched = true;
 
-          players[updated.turn].score += 1;
+          players[turn].score += 1;
         } else {
-          updatedCards[a].flipped = false;
-          updatedCards[b].flipped = false;
+          cardA.flipped = false;
+          cardB.flipped = false;
+
+          turn = turn === 0 ? 1 : 0;
         }
 
-        const finished = updatedCards.every(
-          (c) => c.matched
-        );
+        const finished = freshCards.every((c) => c.matched);
 
         let winner = "";
 
         if (finished) {
           if (players[0].score > players[1].score) {
             winner = players[0].name;
-          } else if (
-            players[1].score > players[0].score
-          ) {
+          } else if (players[1].score > players[0].score) {
             winner = players[1].name;
           } else {
             winner = "Empate";
@@ -220,130 +202,43 @@ export default function MemoryOnline() {
         }
 
         await updateDoc(roomRef, {
-          cards: updatedCards,
-
+          cards: freshCards,
           selected: [],
-
           players,
-
-          turn: match
-            ? updated.turn
-            : updated.turn === 0
-            ? 1
-            : 0,
-
+          turn,
           finished,
-
           winner
         });
-
-        setLoading(false);
-      }, 1200);
+      }, 1000);
     }
   }
 
-  /* =========================
-     ESTILOS
-  ========================= */
-
-  const page = {
-    minHeight: "100vh",
-    background:
-      "linear-gradient(135deg,#020617,#0f172a,#111827)",
-    color: "white",
-    padding: "20px",
-    fontFamily: "Arial"
-  };
-
-  const panel = {
-    background: "rgba(255,255,255,.05)",
-    border:
-      "1px solid rgba(255,255,255,.08)",
-    borderRadius: "24px",
-    padding: "30px",
-    maxWidth: "900px",
-    margin: "0 auto",
-    boxShadow:
-      "0 0 25px rgba(0,255,255,.08)"
-  };
-
-  /* =========================
-     LOGIN
-  ========================= */
-
+  // MENU
   if (!roomId) {
     return (
-      <div style={page}>
-        <div style={panel}>
-          <h1
-            style={{
-              textAlign: "center",
-              color: "#00ffff"
-            }}
-          >
-            🌐 Memory BYB Online
-          </h1>
+      <div style={styles.container}>
+        <div style={styles.card}>
+          <h1 style={styles.title}>🌐 Memory BYB Online</h1>
 
           <input
             placeholder="Tu nombre"
             value={playerName}
-            onChange={(e) =>
-              setPlayerName(e.target.value)
-            }
-            style={{
-              width: "100%",
-              padding: "14px",
-              borderRadius: "12px",
-              border: "none",
-              marginBottom: "15px"
-            }}
+            onChange={(e) => setPlayerName(e.target.value)}
+            style={styles.input}
           />
 
-          <button
-            onClick={createRoom}
-            style={{
-              width: "100%",
-              padding: "14px",
-              borderRadius: "12px",
-              border: "none",
-              background: "#06b6d4",
-              color: "white",
-              fontWeight: "bold",
-              cursor: "pointer",
-              marginBottom: "25px"
-            }}
-          >
+          <button style={styles.createBtn} onClick={createRoom}>
             👑 Crear Sala
           </button>
 
           <input
             placeholder="Código de sala"
-            value={joinCode}
-            onChange={(e) =>
-              setJoinCode(e.target.value)
-            }
-            style={{
-              width: "100%",
-              padding: "14px",
-              borderRadius: "12px",
-              border: "none",
-              marginBottom: "15px"
-            }}
+            value={roomIdInput}
+            onChange={(e) => setRoomIdInput(e.target.value)}
+            style={styles.input}
           />
 
-          <button
-            onClick={joinRoom}
-            style={{
-              width: "100%",
-              padding: "14px",
-              borderRadius: "12px",
-              border: "none",
-              background: "#7c3aed",
-              color: "white",
-              fontWeight: "bold",
-              cursor: "pointer"
-            }}
-          >
+          <button style={styles.joinBtn} onClick={joinRoom}>
             🎮 Unirse
           </button>
         </div>
@@ -351,179 +246,188 @@ export default function MemoryOnline() {
     );
   }
 
-  /* =========================
-     ESPERANDO JUGADORES
-  ========================= */
-
+  // WAITING
   if (!room || !room.started) {
     return (
-      <div style={page}>
-        <div style={panel}>
-          <h1
-            style={{
-              textAlign: "center",
-              color: "#00ffff"
-            }}
-          >
-            👑 Sala creada
-          </h1>
+      <div style={styles.container}>
+        <div style={styles.card}>
+          <h1 style={styles.title}>⏳ Esperando jugadores...</h1>
 
-          <h2
-            style={{
-              textAlign: "center",
-              marginTop: "20px"
-            }}
-          >
+          <h2 style={{ color: "#fff" }}>
             Código:
+            <br />
+            {roomId}
           </h2>
 
-          <h1
-            style={{
-              textAlign: "center",
-              color: "#00ffff",
-              letterSpacing: "3px"
-            }}
-          >
-            {roomId}
-          </h1>
+          <p style={{ color: "#aaa" }}>
+            Comparte este código con las jugadoras
+          </p>
 
-          <p
-            style={{
-              textAlign: "center",
-              marginTop: "20px"
-            }}
-          >
-            Esperando 2 jugadoras...
+          <p style={{ color: "#00ffff" }}>
+            Jugadoras conectadas:
+            <br />
+            {room?.players?.length || 0}/2
           </p>
         </div>
       </div>
     );
   }
 
-  /* =========================
-     JUEGO
-  ========================= */
-
   return (
-    <div style={page}>
-      <div style={panel}>
-        <h1
-          style={{
-            textAlign: "center",
-            color: "#00ffff"
-          }}
-        >
-          🌐 Memory BYB Online
-        </h1>
+    <div style={styles.container}>
+      <div style={styles.game}>
+        <h1 style={styles.title}>🧠 Memory BYB</h1>
 
-        {/* HOST */}
-        <p
-          style={{
-            textAlign: "center",
-            opacity: 0.8
-          }}
-        >
-          👑 Host: {room.host}
-        </p>
-
-        {/* SCORE */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            gap: "15px",
-            marginTop: "25px",
-            marginBottom: "30px",
-            flexWrap: "wrap"
-          }}
-        >
+        <div style={styles.info}>
           {room.players.map((p, i) => (
             <div
               key={i}
               style={{
-                flex: 1,
-                minWidth: "180px",
-                background:
+                ...styles.player,
+                border:
                   room.turn === i
-                    ? "#06b6d4"
-                    : "rgba(255,255,255,.06)",
-                padding: "16px",
-                borderRadius: "16px",
-                textAlign: "center"
+                    ? "2px solid #00ffff"
+                    : "2px solid transparent"
               }}
             >
               <h3>{p.name}</h3>
-
-              <p>{p.score} parejas</p>
-
-              {room.turn === i && (
-                <strong>🎯 Turno</strong>
-              )}
+              <p>{p.score} pts</p>
             </div>
           ))}
         </div>
 
-        {/* TABLERO */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns:
-              "repeat(4,1fr)",
-            gap: "12px"
-          }}
-        >
-          {room.cards.map((card, index) => (
-            <div
-              key={card.id}
-              onClick={() =>
-                !loading && flipCard(index)
-              }
-              style={{
-                height: "110px",
-                borderRadius: "16px",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                textAlign: "center",
-                cursor: "pointer",
-                padding: "10px",
-                fontWeight: "bold",
-                transition: "0.3s",
-                background:
-                  card.flipped || card.matched
-                    ? "#06b6d4"
-                    : "#1e293b"
-              }}
-            >
-              {card.flipped || card.matched
-                ? card.name
-                : "✦"}
-            </div>
-          ))}
-        </div>
-
-        {/* FINAL */}
         {room.finished && (
-          <div
-            style={{
-              textAlign: "center",
-              marginTop: "35px"
-            }}
-          >
-            <h1>🏆</h1>
-
-            <h2
-              style={{
-                color: "#00ffff"
-              }}
-            >
-              {room.winner === "Empate"
-                ? "Empate"
-                : `Ganó ${room.winner}`}
-            </h2>
+          <div style={styles.winner}>
+            🏆 Ganadora: {room.winner}
           </div>
         )}
+
+        <div style={styles.grid}>
+          {room.cards.map((card) => (
+            <div
+              key={card.id}
+              style={{
+                ...styles.memoryCard,
+                background:
+                  card.flipped || card.matched
+                    ? "#00ffff"
+                    : "#1e293b"
+              }}
+              onClick={() => flipCard(card)}
+            >
+              {card.flipped || card.matched ? card.value : "?"}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
 }
+
+const styles = {
+  container: {
+    minHeight: "100vh",
+    background: "#020617",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20
+  },
+
+  card: {
+    background: "#111827",
+    padding: 30,
+    borderRadius: 25,
+    width: 400,
+    maxWidth: "95%",
+    boxShadow: "0 0 25px rgba(0,255,255,0.2)"
+  },
+
+  game: {
+    width: 900,
+    maxWidth: "100%"
+  },
+
+  title: {
+    textAlign: "center",
+    color: "#00ffff",
+    marginBottom: 20
+  },
+
+  input: {
+    width: "100%",
+    padding: 15,
+    marginBottom: 15,
+    borderRadius: 12,
+    border: "none",
+    fontSize: 16
+  },
+
+  createBtn: {
+    width: "100%",
+    padding: 15,
+    borderRadius: 12,
+    border: "none",
+    background: "#06b6d4",
+    color: "#fff",
+    fontSize: 16,
+    cursor: "pointer",
+    marginBottom: 20
+  },
+
+  joinBtn: {
+    width: "100%",
+    padding: 15,
+    borderRadius: 12,
+    border: "none",
+    background: "#7c3aed",
+    color: "#fff",
+    fontSize: 16,
+    cursor: "pointer"
+  },
+
+  info: {
+    display: "flex",
+    justifyContent: "center",
+    gap: 20,
+    marginBottom: 20
+  },
+
+  player: {
+    background: "#111827",
+    color: "#fff",
+    padding: 15,
+    borderRadius: 15,
+    minWidth: 140,
+    textAlign: "center"
+  },
+
+  grid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(4, 1fr)",
+    gap: 15
+  },
+
+  memoryCard: {
+    aspectRatio: "1",
+    background: "#1e293b",
+    borderRadius: 20,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    color: "#000",
+    fontWeight: "bold",
+    cursor: "pointer",
+    fontSize: 18
+  },
+
+  winner: {
+    background: "#22c55e",
+    padding: 15,
+    borderRadius: 15,
+    textAlign: "center",
+    color: "#fff",
+    marginBottom: 20,
+    fontWeight: "bold"
+  }
+};

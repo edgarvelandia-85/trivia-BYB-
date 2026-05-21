@@ -1,138 +1,76 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import MemoryOnline from "./MemoryOnline";
 
 export default function App() {
-  const [game, setGame] = useState(null);
+  const [screen, setScreen] = useState("menu");
 
-  const buttonStyle = (color) => ({
-    width: "100%",
-    padding: "16px",
-    marginTop: "15px",
-    border: "none",
-    borderRadius: "14px",
-    background: color,
-    color: "white",
-    fontSize: "18px",
-    fontWeight: "bold",
-    cursor: "pointer",
-  });
-
-  // =============================
-  // MEMORY ONLINE
-  // =============================
-  if (game === "memory-online") {
-    return <MemoryOnline />;
-  }
-
-  // =============================
-  // TRIVIA
-  // =============================
-  if (game === "trivia") {
-    return (
-      <div style={screen}>
-        <div style={card}>
-          <h1>🧠 Trivia BYB</h1>
-
-          <p>Aquí irá tu trivia.</p>
-
-          <button
-            style={buttonStyle("#ef4444")}
-            onClick={() => setGame(null)}
-          >
-            ⬅ Volver
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // =============================
-  // MITO O VERDAD
-  // =============================
-  if (game === "mito") {
-    return (
-      <div style={screen}>
-        <div style={card}>
-          <h1>⚡ Mito o Verdad</h1>
-
-          <p>Aquí irá tu juego de mito o verdad.</p>
-
-          <button
-            style={buttonStyle("#ef4444")}
-            onClick={() => setGame(null)}
-          >
-            ⬅ Volver
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // =============================
-  // MENU PRINCIPAL
-  // =============================
   return (
-    <div style={screen}>
-      <div style={card}>
-        <h1
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#020617",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 20,
+        fontFamily: "Arial",
+        color: "white"
+      }}
+    >
+      {screen === "menu" && (
+        <div
           style={{
-            color: "#00ffff",
-            textAlign: "center",
-            marginBottom: "10px",
+            width: "100%",
+            maxWidth: 500,
+            background: "#111827",
+            padding: 40,
+            borderRadius: 25
           }}
         >
-          🎮 BYB Games
-        </h1>
+          <h1
+            style={{
+              textAlign: "center",
+              color: "#00ffff"
+            }}
+          >
+            🎮 BYB Games
+          </h1>
 
-        <p
-          style={{
-            textAlign: "center",
-            color: "#ddd",
-            marginBottom: "30px",
-          }}
-        >
-          Selecciona un juego
-        </p>
+          <button
+            onClick={() => setScreen("memory")}
+            style={button("#10b981")}
+          >
+            🌐 Memory Online
+          </button>
 
-        <button
-          style={buttonStyle("#2563eb")}
-          onClick={() => setGame("trivia")}
-        >
-          🧠 Trivia
-        </button>
+          <button style={button("#2563eb")}>
+            🧠 Trivia
+          </button>
 
-        <button
-          style={buttonStyle("#7c3aed")}
-          onClick={() => setGame("mito")}
-        >
-          ⚡ Mito o Verdad
-        </button>
+          <button style={button("#7c3aed")}>
+            ⚡ Mito o Verdad
+          </button>
+        </div>
+      )}
 
-        <button
-          style={buttonStyle("#10b981")}
-          onClick={() => setGame("memory-online")}
-        >
-          🌐 Memory Online
-        </button>
-      </div>
+      {screen === "memory" && (
+        <MemoryOnline />
+      )}
     </div>
   );
 }
 
-const screen = {
-  minHeight: "100vh",
-  background: "#020617",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  padding: "20px",
-};
-
-const card = {
-  width: "100%",
-  maxWidth: "500px",
-  background: "#111827",
-  padding: "40px",
-  borderRadius: "24px",
-  border: "1px solid rgba(255,255,255,0.1)",
-};
+function button(color) {
+  return {
+    width: "100%",
+    padding: 15,
+    marginTop: 15,
+    border: "none",
+    borderRadius: 15,
+    background: color,
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+    cursor: "pointer"
+  };
+}

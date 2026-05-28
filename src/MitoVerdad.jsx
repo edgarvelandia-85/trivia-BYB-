@@ -97,72 +97,86 @@ export default function MitoVerdad() {
   const [player, setPlayer] = useState("");
   const [started, setStarted] = useState(false);
 
-  const [category, setCategory] = useState(null);
+  const [category, setCategory] = useState("");
   const [questionIndex, setQuestionIndex] = useState(0);
+
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
 
-  const currentQuestions = category
-    ? categories[category]
-    : [];
+  const currentQuestions =
+    categories[category] || [];
 
   const currentQuestion =
     currentQuestions[questionIndex];
 
+  // INICIAR
+
+  const startGame = () => {
+    if (player.trim() === "") return;
+
+    setStarted(true);
+  };
+
+  // RESPONDER
+
   const answerQuestion = (answer) => {
 
     if (answer === currentQuestion.a) {
-      setScore(score + 10);
+      setScore((prev) => prev + 10);
     }
 
-    const next = questionIndex + 1;
+    const nextQuestion =
+      questionIndex + 1;
 
-    if (next < currentQuestions.length) {
-      setQuestionIndex(next);
+    if (nextQuestion < currentQuestions.length) {
+
+      setQuestionIndex(nextQuestion);
+
     } else {
+
       setFinished(true);
     }
   };
 
-  const restart = () => {
+  // REINICIAR
+
+  const restartGame = () => {
+
     setPlayer("");
     setStarted(false);
-    setCategory(null);
+
+    setCategory("");
     setQuestionIndex(0);
+
     setScore(0);
     setFinished(false);
   };
 
-  // PANTALLA DE REGISTRO
+  // REGISTRO
 
   if (!started) {
-    return (
-      <div className="min-h-screen bg-[#020617] text-white flex items-center justify-center p-6">
 
-        <div className="bg-[#0f172a] rounded-3xl p-10 w-full max-w-xl shadow-2xl border border-cyan-500/20">
+    return (
+      <div className="min-h-screen bg-[#020617] flex items-center justify-center p-6">
+
+        <div className="bg-[#0f172a] p-10 rounded-3xl w-full max-w-xl border border-cyan-500/20 shadow-2xl">
 
           <h1 className="text-5xl font-black text-center text-cyan-400 mb-8">
             ⚡ Mito o Verdad
           </h1>
 
-          <p className="text-center text-slate-300 mb-6 text-xl">
-            Ingresa tu nombre para comenzar
-          </p>
-
           <input
             type="text"
-            value={player}
-            onChange={(e) => setPlayer(e.target.value)}
             placeholder="Nombre del jugador"
-            className="w-full p-4 rounded-2xl bg-[#111827] border border-cyan-500/30 text-white text-xl outline-none mb-6"
+            value={player}
+            onChange={(e) =>
+              setPlayer(e.target.value)
+            }
+            className="w-full p-4 rounded-2xl bg-[#111827] text-white border border-cyan-500/30 outline-none mb-6 text-xl"
           />
 
           <button
-            onClick={() => {
-              if (player.trim() !== "") {
-                setStarted(true);
-              }
-            }}
+            onClick={startGame}
             className="w-full py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-500 text-xl font-bold hover:scale-105 transition-all"
           >
             🚀 Comenzar
@@ -176,16 +190,17 @@ export default function MitoVerdad() {
   // CATEGORÍAS
 
   if (!category) {
-    return (
-      <div className="min-h-screen bg-[#020617] text-white flex items-center justify-center p-6">
 
-        <div className="bg-[#0f172a] rounded-3xl p-10 w-full max-w-2xl shadow-2xl border border-cyan-500/20">
+    return (
+      <div className="min-h-screen bg-[#020617] flex items-center justify-center p-6">
+
+        <div className="bg-[#0f172a] p-10 rounded-3xl w-full max-w-2xl border border-cyan-500/20 shadow-2xl">
 
           <h1 className="text-5xl font-black text-center text-cyan-400 mb-4">
             ⚡ Mito o Verdad
           </h1>
 
-          <p className="text-center text-xl text-slate-300 mb-10">
+          <p className="text-center text-cyan-300 text-xl mb-10">
             Jugador: {player}
           </p>
 
@@ -198,8 +213,9 @@ export default function MitoVerdad() {
                 onClick={() => {
                   setCategory(cat);
                   setQuestionIndex(0);
+                  setFinished(false);
                 }}
-                className="py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-fuchsia-500 text-xl font-bold hover:scale-105 transition-all"
+                className="py-5 rounded-2xl bg-gradient-to-r from-purple-600 to-fuchsia-500 text-xl font-bold hover:scale-105 transition-all"
               >
                 {cat}
               </button>
@@ -213,31 +229,32 @@ export default function MitoVerdad() {
     );
   }
 
-  // RESULTADO FINAL
+  // RESULTADO
 
   if (finished) {
-    return (
-      <div className="min-h-screen bg-[#020617] text-white flex items-center justify-center p-6">
 
-        <div className="bg-[#0f172a] rounded-3xl p-10 w-full max-w-xl text-center shadow-2xl border border-cyan-500/20">
+    return (
+      <div className="min-h-screen bg-[#020617] flex items-center justify-center p-6">
+
+        <div className="bg-[#0f172a] p-10 rounded-3xl w-full max-w-xl border border-cyan-500/20 shadow-2xl text-center">
 
           <h1 className="text-5xl font-black text-cyan-400 mb-6">
             🎉 Resultado
           </h1>
 
-          <p className="text-2xl mb-4 text-cyan-300">
-            Jugador: {player}
+          <p className="text-2xl text-cyan-300 mb-4">
+            {player}
           </p>
 
-          <p className="text-3xl mb-8">
-            Puntaje: {score}
+          <p className="text-4xl font-black mb-8">
+            {score} pts
           </p>
 
           <button
-            onClick={restart}
+            onClick={restartGame}
             className="w-full py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-500 text-xl font-bold hover:scale-105 transition-all"
           >
-            🔄 Volver al inicio
+            🔄 Reiniciar
           </button>
 
         </div>
@@ -248,29 +265,35 @@ export default function MitoVerdad() {
   // PREGUNTAS
 
   return (
-    <div className="min-h-screen bg-[#020617] text-white flex items-center justify-center p-6">
+    <div className="min-h-screen bg-[#020617] flex items-center justify-center p-6">
 
-      <div className="bg-[#0f172a] rounded-3xl p-10 w-full max-w-2xl shadow-2xl border border-cyan-500/20">
+      <div className="bg-[#0f172a] p-10 rounded-3xl w-full max-w-2xl border border-cyan-500/20 shadow-2xl">
 
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-8">
 
-          <h1 className="text-3xl font-black text-cyan-400">
-            {category}
-          </h1>
+          <div>
+            <h1 className="text-3xl font-black text-cyan-400">
+              {category}
+            </h1>
 
-          <div className="text-right">
-            <p className="text-cyan-300 font-bold">
+            <p className="text-cyan-300">
               {player}
             </p>
+          </div>
 
-            <p className="text-slate-300">
-              {score} pts
+          <div className="text-right">
+            <p className="text-white text-2xl font-bold">
+              {score}
+            </p>
+
+            <p className="text-slate-400">
+              puntos
             </p>
           </div>
 
         </div>
 
-        <div className="bg-[#111827] p-8 rounded-2xl mb-8 text-center text-2xl font-semibold">
+        <div className="bg-[#111827] p-8 rounded-2xl text-center text-2xl font-semibold mb-8">
           {currentQuestion.q}
         </div>
 

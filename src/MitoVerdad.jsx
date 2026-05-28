@@ -109,15 +109,12 @@ export default function MitoVerdad() {
   const currentQuestion =
     currentQuestions[questionIndex];
 
-  // INICIAR
-
   const startGame = () => {
+
     if (player.trim() === "") return;
 
     setStarted(true);
   };
-
-  // RESPONDER
 
   const answerQuestion = (answer) => {
 
@@ -137,8 +134,6 @@ export default function MitoVerdad() {
       setFinished(true);
     }
   };
-
-  // REINICIAR
 
   const restartGame = () => {
 
@@ -164,6 +159,10 @@ export default function MitoVerdad() {
           <h1 className="text-5xl font-black text-center text-cyan-400 mb-8">
             ⚡ Mito o Verdad
           </h1>
+
+          <p className="text-center text-slate-300 mb-6 text-xl">
+            Ingresa tu nombre
+          </p>
 
           <input
             type="text"
@@ -272,6 +271,7 @@ export default function MitoVerdad() {
         <div className="flex justify-between items-center mb-8">
 
           <div>
+
             <h1 className="text-3xl font-black text-cyan-400">
               {category}
             </h1>
@@ -279,9 +279,11 @@ export default function MitoVerdad() {
             <p className="text-cyan-300">
               {player}
             </p>
+
           </div>
 
           <div className="text-right">
+
             <p className="text-white text-2xl font-bold">
               {score}
             </p>
@@ -289,6 +291,7 @@ export default function MitoVerdad() {
             <p className="text-slate-400">
               puntos
             </p>
+
           </div>
 
         </div>

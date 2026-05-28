@@ -17,37 +17,96 @@ badSound.volume = 0.18;
    PREGUNTAS
 ========================= */
 const categories = {
-  Cultura: [
-    { q: "La Gran Muralla China es visible desde el espacio.", a: false },
-    { q: "Australia es país y continente.", a: true },
-    { q: "Shakespeare escribió Hamlet.", a: true }
+  "Marca Personal": [
+    {
+      q: "La marca personal solo importa para influencers.",
+      a: false
+    },
+    {
+      q: "Tu forma de comunicarte también construye tu marca personal.",
+      a: true
+    },
+    {
+      q: "Tener muchos seguidores significa tener una marca personal fuerte.",
+      a: false
+    }
   ],
 
   Diseño: [
-    { q: "El formato SVG pierde calidad al ampliar.", a: false },
-    { q: "CMYK se usa para impresión.", a: true },
-    { q: "PNG siempre pesa menos que JPG.", a: false }
+    {
+      q: "Un buen diseño solo debe verse bonito.",
+      a: false
+    },
+    {
+      q: "Los colores pueden influir en las emociones de una marca.",
+      a: true
+    },
+    {
+      q: "Mientras más elementos tenga un diseño, más profesional se ve.",
+      a: false
+    }
+  ],
+
+  "Redes Sociales": [
+    {
+      q: "Publicar mucho garantiza más ventas.",
+      a: false
+    },
+    {
+      q: "La interacción con la audiencia es clave en redes sociales.",
+      a: true
+    },
+    {
+      q: "El algoritmo siempre muestra el contenido a todos tus seguidores.",
+      a: false
+    }
+  ],
+
+  Branding: [
+    {
+      q: "El branding incluye más que solo el logo.",
+      a: true
+    },
+    {
+      q: "Las emociones hacen parte del branding.",
+      a: true
+    },
+    {
+      q: "El branding puede influir en cuánto está dispuesto a pagar un cliente.",
+      a: true
+    }
   ],
 
   Marketing: [
-    { q: "Una CTA ayuda a convertir.", a: true },
-    { q: "Más seguidores siempre significan más ventas.", a: false },
-    { q: "El email marketing aún funciona.", a: true }
+    {
+      q: "El marketing busca conectar productos con personas.",
+      a: true
+    },
+    {
+      q: "Conocer al público objetivo es importante en marketing.",
+      a: true
+    },
+    {
+      q: "Un producto bueno se vende solo, incluso sin marketing.",
+      a: false
+    }
   ],
 
-  Tecnología: [
-    { q: "Reiniciar no sirve para nada.", a: false },
-    { q: "La nube significa archivos en internet.", a: true },
-    { q: "Modo incógnito te vuelve invisible.", a: false }
-  ],
-
-  General: [
-    { q: "El lirio de mayo es la flor nacional de Colombia.", a: true },
-    { q: "Los murciélagos son ciegos.", a: false },
-    { q: "El agua hierve a 100°C al nivel del mar.", a: true }
+  "Cultura BYB": [
+    {
+      q: "La creatividad es parte fundamental de BYB.",
+      a: true
+    },
+    {
+      q: "La innovación ayuda a que una marca evolucione.",
+      a: true
+    },
+    {
+      q: "La innovación siempre significa crear algo completamente nuevo.",
+      a: false
+    }
   ]
 };
-
 export default function MitoVerdad() {
   const [players, setPlayers] = useState([]);
   const [scores, setScores] = useState({});

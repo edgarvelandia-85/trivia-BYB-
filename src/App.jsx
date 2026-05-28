@@ -1,29 +1,38 @@
-import React from "react";
+import React, { useState } from "react";
 
 export default function App() {
+  const [screen, setScreen] = useState("home");
+
+  if (screen === "trivia") {
+    return (
+      <div style={container}>
+        <div style={card}>
+          <h1 style={title}>🧠 Trivia BYB</h1>
+
+          <p style={{color:"white", textAlign:"center"}}>
+            Bienvenido al juego de Trivia
+          </p>
+
+          <button style={greenBtn}>
+            Crear Sala
+          </button>
+
+          <button style={blueBtn}>
+            Unirse
+          </button>
+
+          <button style={purpleBtn} onClick={() => setScreen("home")}>
+            ⬅ Volver
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div style={{
-      minHeight: "100vh",
-      background: "#020617",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      fontFamily: "Arial"
-    }}>
-      <div style={{
-        width: "90%",
-        maxWidth: "650px",
-        background: "#0f172a",
-        padding: "40px",
-        borderRadius: "25px",
-        boxShadow: "0 0 30px rgba(0,0,0,0.4)"
-      }}>
-        <h1 style={{
-          color: "#22d3ee",
-          textAlign: "center",
-          fontSize: "48px",
-          marginBottom: "40px"
-        }}>
+    <div style={container}>
+      <div style={card}>
+        <h1 style={title}>
           🎮 BYB Games
         </h1>
 
@@ -31,7 +40,7 @@ export default function App() {
           🌐 Memory Online
         </button>
 
-        <button style={blueBtn}>
+        <button style={blueBtn} onClick={() => setScreen("trivia")}>
           🧠 Trivia
         </button>
 
@@ -42,6 +51,31 @@ export default function App() {
     </div>
   );
 }
+
+const container = {
+  minHeight: "100vh",
+  background: "#020617",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  fontFamily: "Arial"
+};
+
+const card = {
+  width: "90%",
+  maxWidth: "650px",
+  background: "#0f172a",
+  padding: "40px",
+  borderRadius: "25px",
+  boxShadow: "0 0 30px rgba(0,0,0,0.4)"
+};
+
+const title = {
+  color: "#22d3ee",
+  textAlign: "center",
+  fontSize: "48px",
+  marginBottom: "40px"
+};
 
 const baseBtn = {
   width: "100%",

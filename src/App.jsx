@@ -1,65 +1,184 @@
 import React, { useState } from "react";
-import Trivia from "./Trivia";
-import MitoVerdad from "./MitoVerdad";
-import MemoryOnline from "./MemoryOnline";
 
 export default function App() {
-  const [game, setGame] = useState(null);
+  const [screen, setScreen] = useState("home");
 
-  if (game === "trivia") {
-    return <Trivia />;
+  // =========================
+  // TRIVIA
+  // =========================
+  if (screen === "trivia") {
+    return (
+      <div style={container}>
+        <div style={card}>
+          <h1 style={title}>🧠 Trivia BYB</h1>
+
+          <p style={text}>
+            Bienvenido al juego de Trivia
+          </p>
+
+          <button style={greenBtn}>
+            🎮 Crear Sala
+          </button>
+
+          <button style={blueBtn}>
+            📱 Unirse
+          </button>
+
+          <button
+            style={purpleBtn}
+            onClick={() => setScreen("home")}
+          >
+            ⬅ Volver
+          </button>
+        </div>
+      </div>
+    );
   }
 
-  if (game === "mito") {
-    return <MitoVerdad />;
+  // =========================
+  // MITO O VERDAD
+  // =========================
+  if (screen === "mito") {
+    return (
+      <div style={container}>
+        <div style={card}>
+          <h1 style={title}>⚡ Mito o Verdad</h1>
+
+          <p style={text}>
+            Escoge una categoría
+          </p>
+
+          <div style={grid}>
+            <button style={categoryBtn}>Marca Personal</button>
+            <button style={categoryBtn}>Diseño</button>
+            <button style={categoryBtn}>Redes Sociales</button>
+            <button style={categoryBtn}>Branding</button>
+            <button style={categoryBtn}>Marketing</button>
+            <button style={categoryBtn}>Cultura BYB</button>
+          </div>
+
+          <button
+            style={purpleBtn}
+            onClick={() => setScreen("home")}
+          >
+            ⬅ Volver
+          </button>
+        </div>
+      </div>
+    );
   }
 
-  if (game === "memory") {
-    return <MemoryOnline />;
-  }
-
+  // =========================
+  // HOME
+  // =========================
   return (
-    <div className="min-h-screen bg-[#020617] flex items-center justify-center p-6 overflow-hidden relative">
-
-      <div className="absolute w-96 h-96 bg-cyan-500/20 blur-3xl rounded-full top-0 left-0"></div>
-      <div className="absolute w-96 h-96 bg-fuchsia-500/20 blur-3xl rounded-full bottom-0 right-0"></div>
-
-      <div className="relative bg-[#0f172a]/90 backdrop-blur-xl w-full max-w-2xl rounded-[32px] p-10 shadow-2xl border border-cyan-400/20">
-
-        <h1 className="text-6xl font-black text-center mb-12 bg-gradient-to-r from-cyan-400 to-fuchsia-500 bg-clip-text text-transparent">
+    <div style={container}>
+      <div style={card}>
+        <h1 style={title}>
           🎮 BYB Games
         </h1>
 
-        <div className="space-y-6">
+        <button style={greenBtn}>
+          🌐 Memory Online
+        </button>
 
-          <button
-            onClick={() => setGame("memory")}
-            className="w-full py-6 rounded-3xl text-2xl font-bold bg-gradient-to-r from-emerald-500 to-green-400 hover:scale-105 transition-all duration-300 shadow-lg shadow-emerald-500/30"
-          >
-            🌐 Memory Online
-          </button>
+        <button
+          style={blueBtn}
+          onClick={() => setScreen("trivia")}
+        >
+          🧠 Trivia
+        </button>
 
-          <button
-            onClick={() => setGame("trivia")}
-            className="w-full py-6 rounded-3xl text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-500 hover:scale-105 transition-all duration-300 shadow-lg shadow-cyan-500/30"
-          >
-            🧠 Trivia
-          </button>
-
-          <button
-            onClick={() => setGame("mito")}
-            className="w-full py-6 rounded-3xl text-2xl font-bold bg-gradient-to-r from-purple-600 to-fuchsia-500 hover:scale-105 transition-all duration-300 shadow-lg shadow-fuchsia-500/30"
-          >
-            ⚡ Mito o Verdad
-          </button>
-
-        </div>
-
-        <p className="text-center text-slate-400 mt-10">
-          BYB Interactive Experience ✨
-        </p>
-
+        <button
+          style={purpleBtn}
+          onClick={() => setScreen("mito")}
+        >
+          ⚡ Mito o Verdad
+        </button>
       </div>
     </div>
   );
 }
+
+// =========================
+// ESTILOS
+// =========================
+
+const container = {
+  minHeight: "100vh",
+  background: "linear-gradient(135deg,#020617,#0f172a)",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  fontFamily: "Arial",
+  padding: "20px"
+};
+
+const card = {
+  width: "90%",
+  maxWidth: "700px",
+  background: "#111827",
+  padding: "40px",
+  borderRadius: "30px",
+  boxShadow: "0 0 40px rgba(0,0,0,0.5)"
+};
+
+const title = {
+  color: "#22d3ee",
+  textAlign: "center",
+  fontSize: "48px",
+  marginBottom: "40px"
+};
+
+const text = {
+  color: "#cbd5e1",
+  textAlign: "center",
+  marginBottom: "30px",
+  fontSize: "22px"
+};
+
+const baseBtn = {
+  width: "100%",
+  padding: "22px",
+  marginBottom: "20px",
+  border: "none",
+  borderRadius: "18px",
+  fontSize: "24px",
+  fontWeight: "bold",
+  color: "white",
+  cursor: "pointer",
+  transition: "0.3s"
+};
+
+const greenBtn = {
+  ...baseBtn,
+  background: "linear-gradient(90deg,#10b981,#059669)"
+};
+
+const blueBtn = {
+  ...baseBtn,
+  background: "linear-gradient(90deg,#2563eb,#1d4ed8)"
+};
+
+const purpleBtn = {
+  ...baseBtn,
+  background: "linear-gradient(90deg,#7c3aed,#6d28d9)"
+};
+
+const grid = {
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr",
+  gap: "15px",
+  marginBottom: "30px"
+};
+
+const categoryBtn = {
+  padding: "18px",
+  borderRadius: "15px",
+  border: "none",
+  background: "#1e293b",
+  color: "white",
+  fontSize: "18px",
+  cursor: "pointer",
+  fontWeight: "bold"
+};

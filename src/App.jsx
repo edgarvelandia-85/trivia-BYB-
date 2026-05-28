@@ -3,13 +3,16 @@ import React, { useState } from "react";
 export default function App() {
   const [screen, setScreen] = useState("home");
 
+  // =========================
+  // TRIVIA
+  // =========================
   if (screen === "trivia") {
     return (
       <div style={container}>
         <div style={card}>
           <h1 style={title}>🧠 Trivia BYB</h1>
 
-          <p style={{color:"white", textAlign:"center"}}>
+          <p style={text}>
             Bienvenido al juego de Trivia
           </p>
 
@@ -21,7 +24,10 @@ export default function App() {
             Unirse
           </button>
 
-          <button style={purpleBtn} onClick={() => setScreen("home")}>
+          <button
+            style={purpleBtn}
+            onClick={() => setScreen("home")}
+          >
             ⬅ Volver
           </button>
         </div>
@@ -29,6 +35,33 @@ export default function App() {
     );
   }
 
+  // =========================
+  // MITO O VERDAD
+  // =========================
+  if (screen === "mito") {
+    return (
+      <div style={container}>
+        <div style={card}>
+          <h1 style={title}>⚡ Mito o Verdad</h1>
+
+          <p style={text}>
+            Próximamente disponible 🔥
+          </p>
+
+          <button
+            style={purpleBtn}
+            onClick={() => setScreen("home")}
+          >
+            ⬅ Volver
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // =========================
+  // HOME
+  // =========================
   return (
     <div style={container}>
       <div style={card}>
@@ -40,11 +73,17 @@ export default function App() {
           🌐 Memory Online
         </button>
 
-        <button style={blueBtn} onClick={() => setScreen("trivia")}>
+        <button
+          style={blueBtn}
+          onClick={() => setScreen("trivia")}
+        >
           🧠 Trivia
         </button>
 
-        <button style={purpleBtn}>
+        <button
+          style={purpleBtn}
+          onClick={() => setScreen("mito")}
+        >
           ⚡ Mito o Verdad
         </button>
       </div>
@@ -52,13 +91,18 @@ export default function App() {
   );
 }
 
+// =========================
+// ESTILOS
+// =========================
+
 const container = {
   minHeight: "100vh",
   background: "#020617",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
-  fontFamily: "Arial"
+  fontFamily: "Arial",
+  padding: "20px"
 };
 
 const card = {
@@ -75,6 +119,13 @@ const title = {
   textAlign: "center",
   fontSize: "48px",
   marginBottom: "40px"
+};
+
+const text = {
+  color: "white",
+  textAlign: "center",
+  marginBottom: "30px",
+  fontSize: "20px"
 };
 
 const baseBtn = {

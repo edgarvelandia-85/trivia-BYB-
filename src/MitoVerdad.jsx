@@ -93,6 +93,10 @@ const categories = {
 };
 
 export default function MitoVerdad() {
+
+  const [player, setPlayer] = useState("");
+  const [started, setStarted] = useState(false);
+
   const [category, setCategory] = useState(null);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -106,6 +110,7 @@ export default function MitoVerdad() {
     currentQuestions[questionIndex];
 
   const answerQuestion = (answer) => {
+
     if (answer === currentQuestion.a) {
       setScore(score + 10);
     }
@@ -120,45 +125,109 @@ export default function MitoVerdad() {
   };
 
   const restart = () => {
+    setPlayer("");
+    setStarted(false);
     setCategory(null);
     setQuestionIndex(0);
     setScore(0);
     setFinished(false);
   };
 
-  if (!category) {
+  // PANTALLA DE REGISTRO
+
+  if (!started) {
     return (
       <div className="min-h-screen bg-[#020617] text-white flex items-center justify-center p-6">
-        <div className="bg-[#0f172a] rounded-3xl p-10 w-full max-w-2xl shadow-2xl border border-cyan-500/20">
 
-          <h1 className="text-5xl font-black text-center text-cyan-400 mb-10">
+        <div className="bg-[#0f172a] rounded-3xl p-10 w-full max-w-xl shadow-2xl border border-cyan-500/20">
+
+          <h1 className="text-5xl font-black text-center text-cyan-400 mb-8">
             ⚡ Mito o Verdad
           </h1>
 
-          <div className="grid gap-4">
-            {Object.keys(categories).map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setCategory(cat)}
-                className="py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-fuchsia-500 text-xl font-bold hover:scale-105 transition-all"
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
+          <p className="text-center text-slate-300 mb-6 text-xl">
+            Ingresa tu nombre para comenzar
+          </p>
+
+          <input
+            type="text"
+            value={player}
+            onChange={(e) => setPlayer(e.target.value)}
+            placeholder="Nombre del jugador"
+            className="w-full p-4 rounded-2xl bg-[#111827] border border-cyan-500/30 text-white text-xl outline-none mb-6"
+          />
+
+          <button
+            onClick={() => {
+              if (player.trim() !== "") {
+                setStarted(true);
+              }
+            }}
+            className="w-full py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-500 text-xl font-bold hover:scale-105 transition-all"
+          >
+            🚀 Comenzar
+          </button>
+
         </div>
       </div>
     );
   }
 
+  // CATEGORÍAS
+
+  if (!category) {
+    return (
+      <div className="min-h-screen bg-[#020617] text-white flex items-center justify-center p-6">
+
+        <div className="bg-[#0f172a] rounded-3xl p-10 w-full max-w-2xl shadow-2xl border border-cyan-500/20">
+
+          <h1 className="text-5xl font-black text-center text-cyan-400 mb-4">
+            ⚡ Mito o Verdad
+          </h1>
+
+          <p className="text-center text-xl text-slate-300 mb-10">
+            Jugador: {player}
+          </p>
+
+          <div className="grid gap-4">
+
+            {Object.keys(categories).map((cat) => (
+
+              <button
+                key={cat}
+                onClick={() => {
+                  setCategory(cat);
+                  setQuestionIndex(0);
+                }}
+                className="py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-fuchsia-500 text-xl font-bold hover:scale-105 transition-all"
+              >
+                {cat}
+              </button>
+
+            ))}
+
+          </div>
+
+        </div>
+      </div>
+    );
+  }
+
+  // RESULTADO FINAL
+
   if (finished) {
     return (
       <div className="min-h-screen bg-[#020617] text-white flex items-center justify-center p-6">
+
         <div className="bg-[#0f172a] rounded-3xl p-10 w-full max-w-xl text-center shadow-2xl border border-cyan-500/20">
 
           <h1 className="text-5xl font-black text-cyan-400 mb-6">
             🎉 Resultado
           </h1>
+
+          <p className="text-2xl mb-4 text-cyan-300">
+            Jugador: {player}
+          </p>
 
           <p className="text-3xl mb-8">
             Puntaje: {score}
@@ -170,24 +239,43 @@ export default function MitoVerdad() {
           >
             🔄 Volver al inicio
           </button>
+
         </div>
       </div>
     );
   }
 
+  // PREGUNTAS
+
   return (
     <div className="min-h-screen bg-[#020617] text-white flex items-center justify-center p-6">
+
       <div className="bg-[#0f172a] rounded-3xl p-10 w-full max-w-2xl shadow-2xl border border-cyan-500/20">
 
-        <h1 className="text-4xl font-black text-cyan-400 mb-6 text-center">
-          {category}
-        </h1>
+        <div className="flex justify-between items-center mb-6">
+
+          <h1 className="text-3xl font-black text-cyan-400">
+            {category}
+          </h1>
+
+          <div className="text-right">
+            <p className="text-cyan-300 font-bold">
+              {player}
+            </p>
+
+            <p className="text-slate-300">
+              {score} pts
+            </p>
+          </div>
+
+        </div>
 
         <div className="bg-[#111827] p-8 rounded-2xl mb-8 text-center text-2xl font-semibold">
           {currentQuestion.q}
         </div>
 
         <div className="grid grid-cols-2 gap-4">
+
           <button
             onClick={() => answerQuestion(true)}
             className="py-5 rounded-2xl bg-green-500 text-2xl font-bold hover:scale-105 transition-all"
@@ -201,11 +289,9 @@ export default function MitoVerdad() {
           >
             ❌ MITO
           </button>
+
         </div>
 
-        <div className="mt-8 text-center text-xl">
-          Puntaje: {score}
-        </div>
       </div>
     </div>
   );

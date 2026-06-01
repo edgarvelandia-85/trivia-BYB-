@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const categories = {
   "Marca Personal": [
@@ -92,232 +92,309 @@ const categories = {
   ]
 };
 
-export default function MitoVerdad() {
+const correctSound = new Audio(
+  "https://assets.mixkit.co/active_storage/sfx/270/270-preview.mp3"
+);
 
+const wrongSound = new Audio(
+  "https://assets.mixkit.co/active_storage/sfx/2955/2955-preview.mp3"
+);
+
+correctSound.volume = 0.3;
+wrongSound.volume = 0.15;
+
+export default function MitoVerdad() {
   const [player, setPlayer] = useState("");
-  const [started, setStarted] = useState(false);
+  const [screen, setScreen] = useState("login");
+
+  const [score, setScore] = useState(0);
 
   const [category, setCategory] = useState("");
   const [questionIndex, setQuestionIndex] = useState(0);
 
-  const [score, setScore] = useState(0);
-  const [finished, setFinished] = useState(false);
+  const [completed, setCompleted] = useState([]);
 
-  const currentQuestions =
-    categories[category] || [];
+  const [time, setTime] = useState(10);
 
-  const currentQuestion =
-    currentQuestions[questionIndex];
+  const questions = categories[category] || [];
+  const question = questions[questionIndex];
 
-  const startGame = () => {
+  useEffect(() => {
+    if (screen !== "game") return;
 
-    if (player.trim() === "") return;
+    if (time <= 0) {
+      nextQuestion();
+      return;
+    }
 
-    setStarted(true);
-  };
+    const timer = setTimeout(() => {
+      setTime((prev) => prev - 1);
+    }, 1000);
 
-  const answerQuestion = (answer) => {
+    return () => clearTimeout(timer);
+  }, [time, screen]);
 
-    if (answer === currentQuestion.a) {
+  function startGame() {
+    if (!player.trim()) return;
+    setScreen("categories");
+  }
+
+  function selectCategory(cat) {
+    setCategory(cat);
+    setQuestionIndex(0);
+    setTime(10);
+    setScreen("game");
+  }
+
+  function answer(value) {
+    if (value === question.a) {
+      correctSound.currentTime = 0;
+      correctSound.play();
+
       setScore((prev) => prev + 10);
-    }
-
-    const nextQuestion =
-      questionIndex + 1;
-
-    if (nextQuestion < currentQuestions.length) {
-
-      setQuestionIndex(nextQuestion);
-
     } else {
-
-      setFinished(true);
+      wrongSound.currentTime = 0;
+      wrongSound.play();
     }
-  };
 
-  const restartGame = () => {
+    nextQuestion();
+  }
 
+  function nextQuestion() {
+    if (questionIndex < questions.length - 1) {
+      setQuestionIndex((prev) => prev + 1);
+      setTime(10);
+    } else {
+      const updated = [...completed, category];
+
+      setCompleted(updated);
+
+      if (updated.length === Object.keys(categories).length) {
+        setScreen("result");
+      } else {
+        setScreen("categories");
+      }
+    }
+  }
+
+  function restart() {
     setPlayer("");
-    setStarted(false);
-
+    setScore(0);
+    setCompleted([]);
     setCategory("");
     setQuestionIndex(0);
+    setTime(10);
+    setScreen("login");
+  }
 
-    setScore(0);
-    setFinished(false);
+  const page = {
+    minHeight: "100vh",
+    background:
+      "linear-gradient(135deg,#050816,#0f172a,#111827)",
+    color: "white",
+    padding: "25px",
+    fontFamily: "Arial"
   };
 
-  // REGISTRO
+  const card = {
+    maxWidth: "900px",
+    margin: "0 auto",
+    background: "rgba(255,255,255,.05)",
+    border: "1px solid rgba(255,255,255,.08)",
+    borderRadius: "24px",
+    padding: "30px",
+    boxShadow: "0 0 25px rgba(0,255,255,.1)"
+  };
 
-  if (!started) {
-
-    return (
-      <div className="min-h-screen bg-[#020617] flex items-center justify-center p-6">
-
-        <div className="bg-[#0f172a] p-10 rounded-3xl w-full max-w-xl border border-cyan-500/20 shadow-2xl">
-
-          <h1 className="text-5xl font-black text-center text-cyan-400 mb-8">
-            ⚡ Mito o Verdad
-          </h1>
-
-          <p className="text-center text-slate-300 mb-6 text-xl">
-            Ingresa tu nombre
-          </p>
-
-          <input
-            type="text"
-            placeholder="Nombre del jugador"
-            value={player}
-            onChange={(e) =>
-              setPlayer(e.target.value)
-            }
-            className="w-full p-4 rounded-2xl bg-[#111827] text-white border border-cyan-500/30 outline-none mb-6 text-xl"
-          />
-
-          <button
-            onClick={startGame}
-            className="w-full py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-500 text-xl font-bold hover:scale-105 transition-all"
-          >
-            🚀 Comenzar
-          </button>
-
-        </div>
-      </div>
-    );
-  }
-
-  // CATEGORÍAS
-
-  if (!category) {
-
-    return (
-      <div className="min-h-screen bg-[#020617] flex items-center justify-center p-6">
-
-        <div className="bg-[#0f172a] p-10 rounded-3xl w-full max-w-2xl border border-cyan-500/20 shadow-2xl">
-
-          <h1 className="text-5xl font-black text-center text-cyan-400 mb-4">
-            ⚡ Mito o Verdad
-          </h1>
-
-          <p className="text-center text-cyan-300 text-xl mb-10">
-            Jugador: {player}
-          </p>
-
-          <div className="grid gap-4">
-
-            {Object.keys(categories).map((cat) => (
-
-              <button
-                key={cat}
-                onClick={() => {
-                  setCategory(cat);
-                  setQuestionIndex(0);
-                  setFinished(false);
-                }}
-                className="py-5 rounded-2xl bg-gradient-to-r from-purple-600 to-fuchsia-500 text-xl font-bold hover:scale-105 transition-all"
-              >
-                {cat}
-              </button>
-
-            ))}
-
-          </div>
-
-        </div>
-      </div>
-    );
-  }
-
-  // RESULTADO
-
-  if (finished) {
-
-    return (
-      <div className="min-h-screen bg-[#020617] flex items-center justify-center p-6">
-
-        <div className="bg-[#0f172a] p-10 rounded-3xl w-full max-w-xl border border-cyan-500/20 shadow-2xl text-center">
-
-          <h1 className="text-5xl font-black text-cyan-400 mb-6">
-            🎉 Resultado
-          </h1>
-
-          <p className="text-2xl text-cyan-300 mb-4">
-            {player}
-          </p>
-
-          <p className="text-4xl font-black mb-8">
-            {score} pts
-          </p>
-
-          <button
-            onClick={restartGame}
-            className="w-full py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-500 text-xl font-bold hover:scale-105 transition-all"
-          >
-            🔄 Reiniciar
-          </button>
-
-        </div>
-      </div>
-    );
-  }
-
-  // PREGUNTAS
+  const button = {
+    width: "100%",
+    padding: "15px",
+    borderRadius: "12px",
+    border: "none",
+    cursor: "pointer",
+    color: "white",
+    fontWeight: "bold",
+    marginTop: "10px"
+  };
 
   return (
-    <div className="min-h-screen bg-[#020617] flex items-center justify-center p-6">
+    <div style={page}>
+      <div style={card}>
 
-      <div className="bg-[#0f172a] p-10 rounded-3xl w-full max-w-2xl border border-cyan-500/20 shadow-2xl">
+        <h1
+          style={{
+            textAlign: "center",
+            color: "#00ffff"
+          }}
+        >
+          ⚡ MITO O VERDAD
+        </h1>
 
-        <div className="flex justify-between items-center mb-8">
+        {screen === "login" && (
+          <>
+            <h2>Registro</h2>
 
-          <div>
+            <input
+              value={player}
+              onChange={(e) =>
+                setPlayer(e.target.value)
+              }
+              placeholder="Tu nombre"
+              style={{
+                width: "100%",
+                padding: "12px",
+                borderRadius: "10px",
+                marginBottom: "15px"
+              }}
+            />
 
-            <h1 className="text-3xl font-black text-cyan-400">
-              {category}
+            <button
+              onClick={startGame}
+              style={{
+                ...button,
+                background: "#2563eb"
+              }}
+            >
+              Comenzar
+            </button>
+          </>
+        )}
+
+        {screen === "categories" && (
+          <>
+            <h2>
+              Jugador: {player}
+            </h2>
+
+            <p>
+              Puntaje: {score}
+            </p>
+
+            {Object.keys(categories)
+              .filter(
+                (cat) =>
+                  !completed.includes(cat)
+              )
+              .map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() =>
+                    selectCategory(cat)
+                  }
+                  style={{
+                    ...button,
+                    background:
+                      "linear-gradient(90deg,#7c3aed,#2563eb)"
+                  }}
+                >
+                  {cat}
+                </button>
+              ))}
+          </>
+        )}
+
+        {screen === "game" && question && (
+          <>
+            <div
+              style={{
+                display: "flex",
+                justifyContent:
+                  "space-between",
+                marginBottom: "20px"
+              }}
+            >
+              <div>{category}</div>
+              <div>⏱ {time}s</div>
+            </div>
+
+            <div
+              style={{
+                background:
+                  "rgba(255,255,255,.08)",
+                padding: "30px",
+                borderRadius: "20px",
+                textAlign: "center",
+                fontSize: "22px",
+                marginBottom: "20px"
+              }}
+            >
+              {question.q}
+            </div>
+
+            <button
+              onClick={() =>
+                answer(true)
+              }
+              style={{
+                ...button,
+                background: "#16a34a"
+              }}
+            >
+              ✅ VERDAD
+            </button>
+
+            <button
+              onClick={() =>
+                answer(false)
+              }
+              style={{
+                ...button,
+                background: "#dc2626"
+              }}
+            >
+              ❌ MITO
+            </button>
+          </>
+        )}
+
+        {screen === "result" && (
+          <>
+            <h2
+              style={{
+                textAlign: "center"
+              }}
+            >
+              🏆 Resultado Final
+            </h2>
+
+            <h3
+              style={{
+                textAlign: "center"
+              }}
+            >
+              {player}
+            </h3>
+
+            <h1
+              style={{
+                textAlign: "center",
+                color: "#00ffff"
+              }}
+            >
+              {score} / 180
             </h1>
 
-            <p className="text-cyan-300">
-              {player}
+            <p
+              style={{
+                textAlign: "center"
+              }}
+            >
+              Categorías completadas:
+              {" "}
+              {completed.length}/6
             </p>
 
-          </div>
-
-          <div className="text-right">
-
-            <p className="text-white text-2xl font-bold">
-              {score}
-            </p>
-
-            <p className="text-slate-400">
-              puntos
-            </p>
-
-          </div>
-
-        </div>
-
-        <div className="bg-[#111827] p-8 rounded-2xl text-center text-2xl font-semibold mb-8">
-          {currentQuestion.q}
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-
-          <button
-            onClick={() => answerQuestion(true)}
-            className="py-5 rounded-2xl bg-green-500 text-2xl font-bold hover:scale-105 transition-all"
-          >
-            ✅ VERDAD
-          </button>
-
-          <button
-            onClick={() => answerQuestion(false)}
-            className="py-5 rounded-2xl bg-red-500 text-2xl font-bold hover:scale-105 transition-all"
-          >
-            ❌ MITO
-          </button>
-
-        </div>
-
+            <button
+              onClick={restart}
+              style={{
+                ...button,
+                background: "#2563eb"
+              }}
+            >
+              🔄 Jugar de nuevo
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

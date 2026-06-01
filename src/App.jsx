@@ -1,97 +1,74 @@
 import React, { useState } from "react";
+import Trivia from "./Trivia";
+import MitoVerdad from "./MitoVerdad";
+import MemoryBYB from "./MemoryBYB";
 
 export default function App() {
-  const [screen, setScreen] = useState("home");
+  const [game, setGame] = useState("");
 
-  // =========================
-  // TRIVIA
-  // =========================
-  if (screen === "trivia") {
-    return (
-      <div style={container}>
-        <div style={card}>
-          <h1 style={title}>🧠 Trivia BYB</h1>
-
-          <p style={text}>
-            Bienvenido al juego de Trivia
-          </p>
-
-          <button style={greenBtn}>
-            🎮 Crear Sala
-          </button>
-
-          <button style={blueBtn}>
-            📱 Unirse
-          </button>
-
-          <button
-            style={purpleBtn}
-            onClick={() => setScreen("home")}
-          >
-            ⬅ Volver
-          </button>
-        </div>
-      </div>
-    );
+  if (game === "trivia") {
+    return <Trivia />;
   }
 
-  // =========================
-  // MITO O VERDAD
-  // =========================
-  if (screen === "mito") {
-    return (
-      <div style={container}>
-        <div style={card}>
-          <h1 style={title}>⚡ Mito o Verdad</h1>
-
-          <p style={text}>
-            Escoge una categoría
-          </p>
-
-          <div style={grid}>
-            <button style={categoryBtn}>Marca Personal</button>
-            <button style={categoryBtn}>Diseño</button>
-            <button style={categoryBtn}>Redes Sociales</button>
-            <button style={categoryBtn}>Branding</button>
-            <button style={categoryBtn}>Marketing</button>
-            <button style={categoryBtn}>Cultura BYB</button>
-          </div>
-
-          <button
-            style={purpleBtn}
-            onClick={() => setScreen("home")}
-          >
-            ⬅ Volver
-          </button>
-        </div>
-      </div>
-    );
+  if (game === "mito") {
+    return <MitoVerdad />;
   }
 
-  // =========================
-  // HOME
-  // =========================
+  if (game === "memory") {
+    return <MemoryBYB />;
+  }
+
   return (
-    <div style={container}>
-      <div style={card}>
-        <h1 style={title}>
+    <div
+      style={{
+        minHeight: "100vh",
+        background:
+          "linear-gradient(135deg,#020617,#0f172a,#111827)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: "20px",
+        fontFamily: "Arial"
+      }}
+    >
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "500px",
+          background: "#111827",
+          borderRadius: "30px",
+          padding: "40px",
+          boxShadow: "0 0 40px rgba(0,255,255,.15)"
+        }}
+      >
+        <h1
+          style={{
+            color: "#22d3ee",
+            textAlign: "center",
+            fontSize: "42px",
+            marginBottom: "30px"
+          }}
+        >
           🎮 BYB Games
         </h1>
 
-        <button style={greenBtn}>
-          🌐 Memory Online
+        <button
+          onClick={() => setGame("memory")}
+          style={btn("#06b6d4", "#0891b2")}
+        >
+          🧩 Memory BYB
         </button>
 
         <button
-          style={blueBtn}
-          onClick={() => setScreen("trivia")}
+          onClick={() => setGame("trivia")}
+          style={btn("#2563eb", "#1d4ed8")}
         >
           🧠 Trivia
         </button>
 
         <button
-          style={purpleBtn}
-          onClick={() => setScreen("mito")}
+          onClick={() => setGame("mito")}
+          style={btn("#7c3aed", "#6d28d9")}
         >
           ⚡ Mito o Verdad
         </button>
@@ -100,85 +77,17 @@ export default function App() {
   );
 }
 
-// =========================
-// ESTILOS
-// =========================
-
-const container = {
-  minHeight: "100vh",
-  background: "linear-gradient(135deg,#020617,#0f172a)",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  fontFamily: "Arial",
-  padding: "20px"
-};
-
-const card = {
-  width: "90%",
-  maxWidth: "700px",
-  background: "#111827",
-  padding: "40px",
-  borderRadius: "30px",
-  boxShadow: "0 0 40px rgba(0,0,0,0.5)"
-};
-
-const title = {
-  color: "#22d3ee",
-  textAlign: "center",
-  fontSize: "48px",
-  marginBottom: "40px"
-};
-
-const text = {
-  color: "#cbd5e1",
-  textAlign: "center",
-  marginBottom: "30px",
-  fontSize: "22px"
-};
-
-const baseBtn = {
-  width: "100%",
-  padding: "22px",
-  marginBottom: "20px",
-  border: "none",
-  borderRadius: "18px",
-  fontSize: "24px",
-  fontWeight: "bold",
-  color: "white",
-  cursor: "pointer",
-  transition: "0.3s"
-};
-
-const greenBtn = {
-  ...baseBtn,
-  background: "linear-gradient(90deg,#10b981,#059669)"
-};
-
-const blueBtn = {
-  ...baseBtn,
-  background: "linear-gradient(90deg,#2563eb,#1d4ed8)"
-};
-
-const purpleBtn = {
-  ...baseBtn,
-  background: "linear-gradient(90deg,#7c3aed,#6d28d9)"
-};
-
-const grid = {
-  display: "grid",
-  gridTemplateColumns: "1fr 1fr",
-  gap: "15px",
-  marginBottom: "30px"
-};
-
-const categoryBtn = {
-  padding: "18px",
-  borderRadius: "15px",
-  border: "none",
-  background: "#1e293b",
-  color: "white",
-  fontSize: "18px",
-  cursor: "pointer",
-  fontWeight: "bold"
-};
+function btn(color1, color2) {
+  return {
+    width: "100%",
+    padding: "18px",
+    marginBottom: "15px",
+    border: "none",
+    borderRadius: "16px",
+    cursor: "pointer",
+    color: "white",
+    fontSize: "20px",
+    fontWeight: "bold",
+    background: `linear-gradient(90deg, ${color1}, ${color2})`
+  };
+}

@@ -331,7 +331,7 @@ export default function App() {
   const [usedCats,setUsedCats]=useState([]);
   const [cat,setCat]=useState("");
   const [idx,setIdx]=useState(0);
-  const [time,setTime]=useState(10);
+  const [time,setTime]=useState(12);
 
   const okRef = useRef(null);
   const badRef = useRef(null);

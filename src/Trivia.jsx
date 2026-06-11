@@ -363,7 +363,7 @@ export default function App() {
   const startCat=(c)=>{
     setCat(c);
     setIdx(0);
-    setTime(10);
+    setTime(12);
     setScreen("game");
   };
 
@@ -371,7 +371,7 @@ export default function App() {
   if(idx < bank[cat].length - 1){
 
     setIdx(idx + 1);
-    setTime(10);
+    setTime(12);
 
   }else{
 
@@ -398,7 +398,7 @@ export default function App() {
   const answer=(i)=>{
     if(i===bank[cat][idx].c){
       okRef.current.play();
-      const ns={...scores,[name]:scores[name]+time*10};
+      const ns={...scores,[name]:scores[name]+time*12};
       setScores(ns);
       localStorage.setItem("triviaScores", JSON.stringify(ns));
     }else{

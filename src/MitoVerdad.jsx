@@ -1,95 +1,143 @@
 import React, { useEffect, useState } from "react";
 
 const categories = {
-  "Marca Personal": [
-    {
-      q: "La marca personal solo importa para influencers.",
-      a: false
-    },
-    {
-      q: "Tu forma de comunicarte también construye tu marca personal.",
-      a: true
-    },
-    {
-      q: "Tener muchos seguidores significa tener una marca personal fuerte.",
-      a: false
-    }
-  ],
+"💡 Marca Personal": [
+{
+q: "Si eres muy bueno en lo que haces, no necesitas trabajar tu marca personal.",
+a: false
+},
+{
+q: "Las personas ya tienen una marca personal aunque nunca hayan pensado en ello.",
+a: true
+},
+{
+q: "Tener muchos seguidores significa tener una marca personal fuerte.",
+a: false
+},
+{
+q: "No comunicar también comunica algo sobre tu marca personal.",
+a: true
+},
+{
+q: "Una marca personal auténtica significa contar absolutamente todo sobre tu vida.",
+a: false
+}
+],
 
-  Diseño: [
-    {
-      q: "Un buen diseño solo debe verse bonito.",
-      a: false
-    },
-    {
-      q: "Los colores pueden influir en las emociones de una marca.",
-      a: true
-    },
-    {
-      q: "Mientras más elementos tenga un diseño, más profesional se ve.",
-      a: false
-    }
-  ],
+"📱 Manejo de Redes Sociales": [
+{
+q: "Un video viral siempre beneficia a una marca.",
+a: false
+},
+{
+q: "La mejor red social depende del público al que quieres llegar.",
+a: true
+},
+{
+q: "Más alcance siempre significa mejor estrategia.",
+a: false
+},
+{
+q: "Escuchar a la audiencia es tan importante como publicar contenido.",
+a: true
+},
+{
+q: "Copiar exactamente lo que hace la competencia garantiza resultados similares.",
+a: false
+}
+],
 
-  "Redes Sociales": [
-    {
-      q: "Publicar mucho garantiza más ventas.",
-      a: false
-    },
-    {
-      q: "La interacción con la audiencia es clave en redes sociales.",
-      a: true
-    },
-    {
-      q: "El algoritmo siempre muestra el contenido a todos tus seguidores.",
-      a: false
-    }
-  ],
+"🤝 Networking": [
+{
+q: "El networking consiste principalmente en conseguir contactos útiles.",
+a: false
+},
+{
+q: "Escuchar puede generar mejores conexiones que hablar.",
+a: true
+},
+{
+q: "Agregar personas en LinkedIn significa que ya hiciste networking.",
+a: false
+},
+{
+q: "Una conversación informal puede convertirse en una oportunidad profesional.",
+a: true
+},
+{
+q: "Mientras más personas conozcas, mejor será tu red profesional.",
+a: false
+}
+],
 
-  Branding: [
-    {
-      q: "El branding incluye más que solo el logo.",
-      a: true
-    },
-    {
-      q: "Las emociones hacen parte del branding.",
-      a: true
-    },
-    {
-      q: "El branding puede influir en cuánto está dispuesto a pagar un cliente.",
-      a: true
-    }
-  ],
+"🎯 Marketing": [
+{
+q: "Un producto excelente siempre se vende solo.",
+a: false
+},
+{
+q: "El marketing busca entender a las personas antes de venderles.",
+a: true
+},
+{
+q: "Si una publicación tiene muchos likes, necesariamente generó resultados.",
+a: false
+},
+{
+q: "Un cliente puede comprar por razones emocionales y justificarlo con lógica.",
+a: true
+},
+{
+q: "Bajar precios es la única forma de competir en el mercado.",
+a: false
+}
+],
 
-  Marketing: [
-    {
-      q: "El marketing busca conectar productos con personas.",
-      a: true
-    },
-    {
-      q: "Conocer al público objetivo es importante en marketing.",
-      a: true
-    },
-    {
-      q: "Un producto bueno se vende solo, incluso sin marketing.",
-      a: false
-    }
-  ],
+"🏆 Liderazgo": [
+{
+q: "Un líder debe tener todas las respuestas.",
+a: false
+},
+{
+q: "Reconocer errores puede fortalecer el liderazgo.",
+a: true
+},
+{
+q: "La autoridad y el liderazgo son exactamente lo mismo.",
+a: false
+},
+{
+q: "Una persona puede liderar sin tener un cargo directivo.",
+a: true
+},
+{
+q: "Los equipos más efectivos son aquellos donde nunca hay desacuerdos.",
+a: false
+}
+],
 
-  "Cultura BYB": [
-    {
-      q: "La creatividad es parte fundamental de BYB.",
-      a: true
-    },
-    {
-      q: "La innovación ayuda a que una marca evolucione.",
-      a: true
-    },
-    {
-      q: "La innovación siempre significa crear algo completamente nuevo.",
-      a: false
-    }
-  ]
+"✨ Be Your Brand": [
+{
+q: "Una marca fuerte se construye únicamente con un buen logo.",
+a: false
+},
+{
+q: "La confianza puede convertirse en una ventaja competitiva.",
+a: true
+},
+{
+q: "Un manual de marca limita la creatividad.",
+a: false
+},
+{
+q: "Las habilidades humanas pueden influir en los resultados de una organización.",
+a: true
+},
+{
+q: "La coherencia es más importante que la perfección en una marca.",
+a: true
+}
+]
 };
 
 const correctSound = new Audio(

@@ -126,7 +126,7 @@ a: false
     q: "Un día en Venus dura más que un año en Venus.",
     a: true
   }
-]
+],
   
 "✨ Be Your Brand": [
 {
@@ -431,7 +431,7 @@ export default function MitoVerdad() {
                 color: "#00ffff"
               }}
             >
-              {score} / 180
+              {score} / 330
             </h1>
 
             <p

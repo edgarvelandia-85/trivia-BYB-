@@ -93,29 +93,40 @@ a: false
 }
 ],
 
-"🏆 Liderazgo": [
-{
-q: "Un líder debe tener todas las respuestas.",
-a: false
-},
-{
-q: "Reconocer errores puede fortalecer el liderazgo.",
-a: true
-},
-{
-q: "La autoridad y el liderazgo son exactamente lo mismo.",
-a: false
-},
-{
-q: "Una persona puede liderar sin tener un cargo directivo.",
-a: true
-},
-{
-q: "Los equipos más efectivos son aquellos donde nunca hay desacuerdos.",
-a: false
-}
-],
-
+"Cultura General": [
+  {
+    q: "La Gran Muralla China puede verse claramente desde la Luna a simple vista.",
+    a: false
+  },
+  {
+    q: "Australia es más ancha que la Luna.",
+    a: true
+  },
+  {
+    q: "Los tiburones existían antes que los árboles.",
+    a: true
+  },
+  {
+    q: "Napoleón Bonaparte era extremadamente bajo para su época.",
+    a: false
+  },
+  {
+    q: "El corazón de una ballena azul puede pesar más que un automóvil pequeño.",
+    a: true
+  },
+  {
+    q: "Los camellos almacenan agua en sus jorobas.",
+    a: false
+  },
+  {
+    q: "La Torre Eiffel puede crecer varios centímetros durante el verano.",
+    a: true
+  },
+  {
+    q: "Un día en Venus dura más que un año en Venus.",
+    a: true
+  }
+]
 "✨ Be Your Brand": [
 {
 q: "Una marca fuerte se construye únicamente con un buen logo.",

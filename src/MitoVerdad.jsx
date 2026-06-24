@@ -93,7 +93,7 @@ a: false
 }
 ],
 
-"Cultura General": [
+"🌎 Cultura General": [
   {
     q: "La Gran Muralla China puede verse claramente desde la Luna a simple vista.",
     a: false
@@ -127,6 +127,7 @@ a: false
     a: true
   }
 ]
+  
 "✨ Be Your Brand": [
 {
 q: "Una marca fuerte se construye únicamente con un buen logo.",

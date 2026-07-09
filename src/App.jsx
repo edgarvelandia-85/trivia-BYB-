@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Trivia from "./Trivia";
 import MitoVerdad from "./MitoVerdad";
 import MemoryBYB from "./MemoryBYB";
+import BusinessSimulator from "./BusinessSimulator/BusinessSimulator";
 
 export default function App() {
   const [game, setGame] = useState("");

@@ -19,6 +19,10 @@ export default function App() {
     return <MemoryBYB />;
   }
 
+  if (game === "business") {
+  return <BusinessSimulator />;
+}
+
   return (
     <div
       style={{
@@ -53,6 +57,13 @@ export default function App() {
           🎮 BYB Games
         </h1>
 
+        <button
+  onClick={() => setGame("business")}
+  style={btn("#14b8a6", "#0f766e")}
+>
+  🚀 Business Simulator
+</button>
+        
         <button
           onClick={() => setGame("memory")}
           style={btn("#06b6d4", "#0891b2")}

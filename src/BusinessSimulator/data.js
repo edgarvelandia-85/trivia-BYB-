@@ -50,7 +50,8 @@ export const SERVICES = [
 ];
 
 export const COMPANIES = [
-  {
+
+{
   id: 1,
   icon: "🏥",
   company: "Clínica San Gabriel",
@@ -61,22 +62,16 @@ export const COMPANIES = [
 
     {
       id: 1,
-
       question: "La clínica tiene excelentes especialistas, pero su imagen no transmite confianza. ¿Qué debería hacerse primero?",
-
       options: [
         "Diseño de Marca",
         "Marketing en Salud",
         "Sitio Web",
         "Redes Sociales"
       ],
-
       correct: 0,
-
-      explanation: "Una identidad visual sólida genera confianza y sirve como base para todas las acciones posteriores.",
-
+      explanation: "Una identidad visual sólida transmite confianza y fortalece el posicionamiento.",
       score: 10,
-
       impact: {
         branding: 20,
         manual: 10
@@ -85,22 +80,16 @@ export const COMPANIES = [
 
     {
       id: 2,
-
-      question: "La clínica recibe 8.000 visitas al sitio web al mes, pero menos del 2% agenda una cita. ¿Qué harías primero?",
-
+      question: "La clínica recibe muchas visitas en su página web, pero pocos pacientes solicitan citas.",
       options: [
-        "Optimizar el sitio web",
+        "Optimizar el Sitio Web",
         "Cambiar el logo",
         "Abrir TikTok",
-        "Comprar más publicidad"
+        "Comprar publicidad"
       ],
-
       correct: 0,
-
       explanation: "Antes de invertir más dinero es necesario mejorar la conversión del sitio web.",
-
       score: 10,
-
       impact: {
         website: 20,
         marketing: 10
@@ -109,22 +98,16 @@ export const COMPANIES = [
 
     {
       id: 3,
-
-      question: "La clínica tiene buena imagen, pero casi nadie la conoce en la ciudad.",
-
+      question: "La clínica tiene buena reputación, pero muy pocas personas conocen sus servicios.",
       options: [
         "Marketing en Salud",
         "Manual de Marca",
-        "Diseño",
-        "Plantillas"
+        "Plantillas",
+        "Diseño"
       ],
-
       correct: 0,
-
-      explanation: "La prioridad es aumentar el reconocimiento mediante una estrategia de marketing.",
-
+      explanation: "El marketing permite aumentar el reconocimiento y atraer nuevos pacientes.",
       score: 10,
-
       impact: {
         marketing: 20,
         social: 10
@@ -133,22 +116,16 @@ export const COMPANIES = [
 
     {
       id: 4,
-
-      question: "Cada empleado utiliza un logo diferente en sus presentaciones.",
-
+      question: "Cada colaborador utiliza un logotipo diferente en sus documentos.",
       options: [
         "Manual de Marca",
-        "Marketing",
         "Publicidad",
-        "Sitio Web"
+        "Sitio Web",
+        "Marketing"
       ],
-
       correct: 0,
-
-      explanation: "El Manual de Marca garantiza coherencia en toda la comunicación.",
-
+      explanation: "El Manual de Marca garantiza coherencia en toda la organización.",
       score: 10,
-
       impact: {
         manual: 20,
         branding: 10
@@ -157,25 +134,111 @@ export const COMPANIES = [
 
     {
       id: 5,
-
-      question: "La clínica publica contenido constantemente, pero casi nadie interactúa.",
-
+      question: "La clínica publica contenido constantemente pero obtiene muy poca interacción.",
       options: [
-        "Crear una estrategia de Redes Sociales",
-        "Cambiar el edificio",
-        "Imprimir folletos",
-        "Modificar el uniforme"
+        "Estrategia de Redes Sociales",
+        "Cambiar el uniforme",
+        "Comprar computadores",
+        "Imprimir folletos"
       ],
-
       correct: 0,
-
-      explanation: "Una estrategia de contenido aumenta la interacción y la comunidad.",
-
+      explanation: "Una estrategia de contenido mejora el alcance y el compromiso de la comunidad.",
       score: 10,
-
       impact: {
         social: 20,
         marketing: 10
+      }
+    },
+
+    {
+      id: 6,
+      question: "El sitio web tarda demasiado en cargar desde dispositivos móviles.",
+      options: [
+        "Optimizar el Sitio Web",
+        "Cambiar el logotipo",
+        "Abrir Instagram",
+        "Comprar publicidad"
+      ],
+      correct: 0,
+      explanation: "La velocidad del sitio impacta directamente la experiencia del usuario.",
+      score: 10,
+      impact: {
+        website: 20,
+        marketing: 5
+      }
+    },
+
+    {
+      id: 7,
+      question: "Todos los documentos institucionales tienen diseños diferentes.",
+      options: [
+        "Plantillas Personalizadas",
+        "Redes Sociales",
+        "Publicidad",
+        "Diseño Web"
+      ],
+      correct: 0,
+      explanation: "Las plantillas unifican la comunicación institucional.",
+      score: 10,
+      impact: {
+        templates: 20,
+        branding: 10
+      }
+    },
+
+    {
+      id: 8,
+      question: "El equipo comercial consigue reuniones, pero no logra cerrar convenios.",
+      options: [
+        "Estrategia Comercial",
+        "Manual de Marca",
+        "Diseño",
+        "Redes Sociales"
+      ],
+      correct: 0,
+      explanation: "Una estrategia comercial mejora la conversión de oportunidades.",
+      score: 10,
+      impact: {
+        commercial: 20,
+        marketing: 10
+      }
+    },
+
+    {
+      id: 9,
+      question: "Los pacientes realizan siempre las mismas preguntas en redes sociales.",
+      options: [
+        "Crear contenido educativo",
+        "Cambiar el logo",
+        "Comprar computadores",
+        "Imprimir folletos"
+      ],
+      correct: 0,
+      explanation: "El contenido educativo mejora la confianza y reduce dudas frecuentes.",
+      score: 10,
+      impact: {
+        social: 20,
+        marketing: 10
+      }
+    },
+
+    {
+      id: 10,
+      question: "La gerencia quiere posicionar la clínica como líder regional durante el próximo año.",
+      options: [
+        "Integrar Branding, Marketing, Comercial y Sitio Web",
+        "Cambiar únicamente el logotipo",
+        "Publicar una vez al mes",
+        "Comprar equipos"
+      ],
+      correct: 0,
+      explanation: "El crecimiento sostenible requiere integrar todos los servicios estratégicos.",
+      score: 10,
+      impact: {
+        branding: 10,
+        marketing: 20,
+        website: 10,
+        commercial: 20
       }
     }
 
@@ -183,127 +246,6 @@ export const COMPANIES = [
 },
 
 {
-  id: 6,
-
-  question: "Los pacientes encuentran la clínica en Google, pero el sitio tarda mucho en cargar.",
-
-  options: [
-    "Optimizar el Sitio Web",
-    "Cambiar el logo",
-    "Crear un video",
-    "Imprimir publicidad"
-  ],
-
-  correct: 0,
-
-  explanation: "La velocidad del sitio influye directamente en la experiencia del usuario y en la conversión.",
-
-  score: 10,
-
-  impact: {
-    website: 20,
-    marketing: 5
-  }
-},
-  
-{
-  id: 7,
-
-  question: "La clínica necesita que todos sus documentos corporativos tengan el mismo diseño.",
-
-  options: [
-    "Plantillas Personalizadas",
-    "Redes Sociales",
-    "Marketing",
-    "Publicidad"
-  ],
-
-  correct: 0,
-
-  explanation: "Las plantillas garantizan uniformidad y profesionalismo en la comunicación.",
-
-  score: 10,
-
-  impact: {
-    templates: 20,
-    branding: 10
-  }
-},
-
-{
-  id: 8,
-
-  question: "El equipo comercial visita hospitales pero no logra cerrar convenios.",
-
-  options: [
-    "Estrategia Comercial",
-    "Manual de Marca",
-    "Diseño",
-    "Sitio Web"
-  ],
-
-  correct: 0,
-
-  explanation: "Una estrategia comercial bien definida aumenta la tasa de cierre y fortalece las relaciones comerciales.",
-
-  score: 10,
-
-  impact: {
-    commercial: 20,
-    marketing: 10
-  }
-},
-  
-{
-  id: 9,
-
-  question: "Los pacientes preguntan constantemente por los mismos servicios a través de redes sociales.",
-
-  options: [
-    "Crear contenido educativo",
-    "Cambiar el logo",
-    "Comprar computadores",
-    "Imprimir folletos"
-  ],
-
-  correct: 0,
-
-  explanation: "El contenido educativo reduce dudas frecuentes y fortalece la confianza de los pacientes.",
-
-  score: 10,
-
-  impact: {
-    social: 20,
-    marketing: 10
-  }
-},
-  
-{
-  id: 10,
-
-  question: "La gerencia quiere posicionar la clínica como referente regional durante el próximo año.",
-
-  options: [
-    "Integrar Branding, Marketing, Sitio Web y Estrategia Comercial",
-    "Cambiar únicamente el logotipo",
-    "Publicar una vez al mes en Facebook",
-    "Comprar más computadores"
-  ],
-
-  correct: 0,
-
-  explanation: "El crecimiento sostenible requiere una estrategia integral, no una acción aislada.",
-
-  score: 10,
-
-  impact: {
-    branding: 10,
-    marketing: 20,
-    website: 10,
-    commercial: 20
-  }
-},
-  {
   id: 2,
   icon: "🤖",
   company: "HealthTech Nova",
@@ -314,7 +256,7 @@ export const COMPANIES = [
 
     {
       id: 1,
-      question: "La startup tiene una tecnología innovadora, pero los inversionistas dicen que la marca no inspira confianza.",
+      question: "La startup tiene una tecnología innovadora, pero los inversionistas consideran que la marca no transmite confianza.",
       options: [
         "Diseño de Marca",
         "Publicidad",
@@ -322,7 +264,7 @@ export const COMPANIES = [
         "Plantillas"
       ],
       correct: 0,
-      explanation: "Una identidad de marca sólida transmite profesionalismo y credibilidad ante inversionistas.",
+      explanation: "Una identidad de marca sólida aumenta la credibilidad frente a inversionistas.",
       score: 10,
       impact: {
         branding: 20,
@@ -332,15 +274,15 @@ export const COMPANIES = [
 
     {
       id: 2,
-      question: "Los inversionistas solicitan conocer la empresa antes de la reunión. ¿Qué debería fortalecerse primero?",
+      question: "Antes de una reunión de inversión, los socios revisarán la presencia digital de la empresa.",
       options: [
-        "Sitio Web",
-        "TikTok",
-        "Volantes",
-        "Publicidad impresa"
+        "Optimizar el Sitio Web",
+        "Crear TikTok",
+        "Imprimir folletos",
+        "Cambiar el nombre"
       ],
       correct: 0,
-      explanation: "El sitio web suele ser el primer punto de contacto para inversionistas y aliados.",
+      explanation: "El sitio web suele ser la primera impresión para inversionistas.",
       score: 10,
       impact: {
         website: 20,
@@ -350,15 +292,15 @@ export const COMPANIES = [
 
     {
       id: 3,
-      question: "La empresa tiene un gran producto, pero casi nadie la conoce dentro del sector salud.",
+      question: "La solución tecnológica es excelente, pero muy pocos hospitales conocen la empresa.",
       options: [
         "Marketing en Salud",
-        "Cambiar el nombre",
         "Comprar computadores",
-        "Imprimir afiches"
+        "Cambiar colores",
+        "Publicidad impresa"
       ],
       correct: 0,
-      explanation: "El Marketing en Salud permite posicionar la empresa frente a clientes e inversionistas.",
+      explanation: "Una estrategia de marketing aumenta el reconocimiento de marca.",
       score: 10,
       impact: {
         marketing: 20,
@@ -368,15 +310,15 @@ export const COMPANIES = [
 
     {
       id: 4,
-      question: "El equipo comercial consigue reuniones, pero casi nunca logra cerrar negocios.",
+      question: "El equipo comercial consigue reuniones, pero pocas terminan en contratos.",
       options: [
         "Estrategia Comercial",
-        "Diseño de Marca",
         "Manual de Marca",
-        "Publicidad"
+        "Diseño de Marca",
+        "Redes Sociales"
       ],
       correct: 0,
-      explanation: "Una estrategia comercial bien estructurada mejora la conversión de oportunidades.",
+      explanation: "Una estrategia comercial mejora el proceso de ventas.",
       score: 10,
       impact: {
         commercial: 20,
@@ -386,15 +328,15 @@ export const COMPANIES = [
 
     {
       id: 5,
-      question: "Cada vendedor presenta la empresa con diapositivas diferentes.",
+      question: "Cada asesor utiliza una presentación diferente para vender la solución.",
       options: [
         "Plantillas Personalizadas",
+        "Publicidad",
         "Sitio Web",
-        "Redes Sociales",
-        "Publicidad"
+        "TikTok"
       ],
       correct: 0,
-      explanation: "Las plantillas mantienen una imagen profesional y coherente en todas las presentaciones.",
+      explanation: "Las plantillas garantizan coherencia en todas las presentaciones.",
       score: 10,
       impact: {
         templates: 20,
@@ -404,15 +346,15 @@ export const COMPANIES = [
 
     {
       id: 6,
-      question: "La empresa recibe muchas visitas desde LinkedIn, pero casi nadie solicita una demostración.",
+      question: "Muchos usuarios visitan la página principal, pero pocos solicitan una demostración.",
       options: [
         "Optimizar el Sitio Web",
         "Cambiar el logo",
-        "Comprar publicidad",
-        "Crear un eslogan"
+        "Abrir Instagram",
+        "Comprar publicidad"
       ],
       correct: 0,
-      explanation: "Una buena conversión depende de una experiencia digital optimizada.",
+      explanation: "La conversión depende de una buena experiencia digital.",
       score: 10,
       impact: {
         website: 20,
@@ -422,15 +364,15 @@ export const COMPANIES = [
 
     {
       id: 7,
-      question: "Los clientes actuales están satisfechos, pero no recomiendan la solución.",
+      question: "Los clientes están satisfechos, pero casi nadie recomienda la plataforma.",
       options: [
-        "Estrategia de Redes Sociales",
-        "Cambiar colores",
-        "Comprar computadores",
+        "Fortalecer Redes Sociales",
+        "Cambiar el logo",
+        "Comprar oficinas",
         "Imprimir folletos"
       ],
       correct: 0,
-      explanation: "Una estrategia digital fortalece la comunidad y genera recomendaciones.",
+      explanation: "Las redes ayudan a crear comunidad y aumentar las recomendaciones.",
       score: 10,
       impact: {
         social: 20,
@@ -440,15 +382,15 @@ export const COMPANIES = [
 
     {
       id: 8,
-      question: "La empresa creció rápidamente y cada área comunica la marca de forma diferente.",
+      question: "Cada área utiliza versiones diferentes del logotipo y los colores corporativos.",
       options: [
         "Manual de Marca",
-        "Más publicidad",
-        "Nuevo logotipo",
-        "Campaña en radio"
+        "Nueva campaña",
+        "Publicidad",
+        "Diseño Web"
       ],
       correct: 0,
-      explanation: "El Manual de Marca garantiza consistencia en toda la organización.",
+      explanation: "El Manual de Marca garantiza coherencia institucional.",
       score: 10,
       impact: {
         manual: 20,
@@ -458,15 +400,15 @@ export const COMPANIES = [
 
     {
       id: 9,
-      question: "La startup quiere expandirse a tres ciudades en menos de un año.",
+      question: "La empresa quiere expandirse a tres ciudades durante el próximo año.",
       options: [
         "Integrar Marketing + Comercial + Sitio Web",
-        "Cambiar el logo",
+        "Cambiar el nombre",
         "Crear una mascota",
         "Comprar oficinas"
       ],
       correct: 0,
-      explanation: "El crecimiento sostenible requiere una estrategia integral de posicionamiento y ventas.",
+      explanation: "El crecimiento requiere una estrategia integral.",
       score: 10,
       impact: {
         marketing: 15,
@@ -477,15 +419,15 @@ export const COMPANIES = [
 
     {
       id: 10,
-      question: "La empresa quiere convertirse en referente nacional del sector HealthTech.",
+      question: "La meta es convertirse en la startup HealthTech más reconocida del país.",
       options: [
-        "Combinar Branding, Marketing, Comercial y Sitio Web",
-        "Solo publicar en redes",
-        "Cambiar el nombre",
-        "Invertir únicamente en publicidad"
+        "Integrar Branding, Marketing, Comercial y Sitio Web",
+        "Solo invertir en publicidad",
+        "Cambiar el logo",
+        "Publicar una vez al mes"
       ],
       correct: 0,
-      explanation: "El liderazgo de una empresa se construye integrando todos los servicios estratégicos.",
+      explanation: "El liderazgo se logra integrando todas las estrategias de crecimiento.",
       score: 10,
       impact: {
         branding: 10,
@@ -498,7 +440,7 @@ export const COMPANIES = [
   ]
 },
 
-  {
+{
   id: 3,
   icon: "💊",
   company: "Laboratorio BioPlus",
@@ -527,7 +469,7 @@ export const COMPANIES = [
 
     {
       id: 2,
-      question: "Los distribuidores buscan información del laboratorio y encuentran un sitio desactualizado.",
+      question: "Los distribuidores buscan información del laboratorio y encuentran un sitio web desactualizado.",
       options: [
         "Actualizar el Sitio Web",
         "Cambiar el nombre",
@@ -545,7 +487,7 @@ export const COMPANIES = [
 
     {
       id: 3,
-      question: "El laboratorio tiene buenos productos, pero pocas clínicas conocen sus beneficios.",
+      question: "El laboratorio tiene excelentes productos, pero pocas clínicas conocen sus beneficios.",
       options: [
         "Marketing en Salud",
         "Cambiar el logo",
@@ -553,7 +495,7 @@ export const COMPANIES = [
         "Imprimir folletos"
       ],
       correct: 0,
-      explanation: "Una estrategia de Marketing en Salud aumenta la visibilidad y la confianza del mercado.",
+      explanation: "El Marketing en Salud aumenta el reconocimiento y genera confianza.",
       score: 10,
       impact: {
         marketing: 20,
@@ -571,7 +513,7 @@ export const COMPANIES = [
         "Sitio Web"
       ],
       correct: 0,
-      explanation: "Las plantillas garantizan uniformidad y fortalecen la imagen corporativa.",
+      explanation: "Las plantillas mantienen una comunicación uniforme.",
       score: 10,
       impact: {
         templates: 20,
@@ -589,7 +531,7 @@ export const COMPANIES = [
         "Publicidad"
       ],
       correct: 0,
-      explanation: "Una estrategia comercial bien definida mejora la conversión de oportunidades.",
+      explanation: "Una estrategia comercial mejora la conversión de oportunidades.",
       score: 10,
       impact: {
         commercial: 20,
@@ -601,13 +543,13 @@ export const COMPANIES = [
       id: 6,
       question: "Los clientes hacen siempre las mismas preguntas sobre los productos.",
       options: [
-        "Crear contenido educativo en Redes Sociales",
+        "Crear contenido educativo",
         "Cambiar el logo",
         "Comprar computadores",
         "Abrir otra sede"
       ],
       correct: 0,
-      explanation: "El contenido educativo fortalece la confianza y reduce las dudas frecuentes.",
+      explanation: "El contenido educativo fortalece la confianza y reduce dudas frecuentes.",
       score: 10,
       impact: {
         social: 20,
@@ -625,7 +567,7 @@ export const COMPANIES = [
         "Sitio Web"
       ],
       correct: 0,
-      explanation: "El Manual de Marca mantiene la coherencia en toda la organización.",
+      explanation: "El Manual de Marca garantiza consistencia en toda la organización.",
       score: 10,
       impact: {
         manual: 20,
@@ -643,7 +585,7 @@ export const COMPANIES = [
         "Abrir otra oficina"
       ],
       correct: 0,
-      explanation: "Una experiencia digital optimizada aumenta el retorno de la inversión en campañas.",
+      explanation: "Una buena experiencia digital mejora el retorno de cualquier campaña.",
       score: 10,
       impact: {
         website: 20,
@@ -658,10 +600,10 @@ export const COMPANIES = [
         "Integrar Branding, Marketing y Estrategia Comercial",
         "Cambiar el logotipo",
         "Solo publicar en Facebook",
-        "Comprar más vehículos"
+        "Comprar vehículos"
       ],
       correct: 0,
-      explanation: "La expansión requiere una estrategia integral que fortalezca la marca y las ventas.",
+      explanation: "La expansión requiere una estrategia integral.",
       score: 10,
       impact: {
         branding: 10,
@@ -680,7 +622,7 @@ export const COMPANIES = [
         "Invertir únicamente en publicidad"
       ],
       correct: 0,
-      explanation: "El posicionamiento nacional requiere una estrategia integral que combine branding, marketing, ventas, presencia digital y comunicación consistente.",
+      explanation: "El posicionamiento nacional requiere integrar branding, marketing, estrategia comercial y presencia digital.",
       score: 10,
       impact: {
         branding: 10,
@@ -697,5 +639,3 @@ export const COMPANIES = [
 }
 
 ];
-
-  

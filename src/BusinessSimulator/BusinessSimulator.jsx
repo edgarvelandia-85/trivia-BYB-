@@ -17,62 +17,64 @@ export default function BusinessSimulator() {
 
   const [time, setTime] = useState(20);
 
-  const [feedback, setFeedback] = useState(null);
+  const [selected, setSelected] = useState(null);
+
+  const [showExplanation, setShowExplanation] = useState(false);
 
   const [levels, setLevels] = useState({
-    branding:0,
-    manual:0,
-    marketing:0,
-    commercial:0,
-    social:0,
-    website:0,
-    templates:0,
-    formulas:0
+    branding: 0,
+    manual: 0,
+    marketing: 0,
+    commercial: 0,
+    social: 0,
+    website: 0,
+    templates: 0,
+    formulas: 0,
   });
 
   const question = company.questions[questionIndex];
 
-  useEffect(()=>{
+  useEffect(() => {
 
-    if(!started || finished) return;
+    if (!started || finished || showExplanation) return;
 
-    if(feedback) return;
+    if (time === 0) {
 
-    if(time===0){
-
-      handleNext();
+      nextQuestion();
 
       return;
 
     }
 
-    const timer=setTimeout(()=>{
+    const timer = setTimeout(() => {
 
-      setTime(t=>t-1);
+      setTime((t) => t - 1);
 
-    },1000);
+    }, 1000);
 
-    return ()=>clearTimeout(timer);
+    return () => clearTimeout(timer);
 
-  },[time,started,finished,feedback]);
+  }, [time, started, finished, showExplanation]);
 
-  function handleAnswer(index){
+  function answer(index) {
 
-    const correct=index===question.correct;
+    if (selected !== null) return;
 
-    if(correct){
+    setSelected(index);
 
-      setScore(s=>s+question.score);
+    if (index === question.correct) {
 
-      setLevels(prev=>{
+      setScore((s) => s + question.score);
 
-        const copy={...prev};
+      setLevels((prev) => {
 
-        Object.keys(question.impact).forEach(key=>{
+        const copy = { ...prev };
 
-          copy[key]+=question.impact[key];
+        Object.keys(question.impact).forEach((key) => {
 
-          if(copy[key]>100) copy[key]=100;
+          copy[key] += question.impact[key];
+
+          if (copy[key] > 100) copy[key] = 100;
 
         });
 
@@ -82,21 +84,13 @@ export default function BusinessSimulator() {
 
     }
 
-    setFeedback({
-
-      correct,
-
-      explanation:question.explanation
-
-    });
+    setShowExplanation(true);
 
   }
 
-  function handleNext(){
+  function nextQuestion() {
 
-    setFeedback(null);
-
-    if(questionIndex===company.questions.length-1){
+    if (questionIndex === company.questions.length - 1) {
 
       setFinished(true);
 
@@ -104,36 +98,22 @@ export default function BusinessSimulator() {
 
     }
 
-    setQuestionIndex(q=>q+1);
+    setQuestionIndex((q) => q + 1);
+
+    setSelected(null);
+
+    setShowExplanation(false);
 
     setTime(20);
 
   }
-
-  function restart(){
-
-    window.location.reload();
-
-  }
-
-  function level(){
-
-    if(score>=90) return "🏆 Consultor Elite";
-
-    if(score>=70) return "🥇 Consultor Senior";
-
-    if(score>=50) return "🥈 Consultor Intermedio";
-
-    return "🥉 Consultor Junior";
-
-  }
+    // ============================
+  // PANTALLA DE BIENVENIDA
+  // ============================
 
   if (!started) {
-
     return (
-
       <div style={styles.background}>
-
         <div style={styles.card}>
 
           <h1 style={styles.title}>
@@ -141,14 +121,16 @@ export default function BusinessSimulator() {
           </h1>
 
           <p style={styles.subtitle}>
-            Toma decisiones estratégicas para hacer crecer una empresa utilizando los servicios de Be Your Brand.
+            Ponte en el papel de un consultor de Be Your Brand.
+            Toma decisiones estratégicas y desarrolla los servicios
+            adecuados para cada empresa.
           </p>
 
           <input
-            placeholder="Nombre del participante"
+            style={styles.input}
+            placeholder="Escribe tu nombre"
             value={player}
             onChange={(e) => setPlayer(e.target.value)}
-            style={styles.input}
           />
 
           <button
@@ -156,31 +138,33 @@ export default function BusinessSimulator() {
             onClick={() => {
 
               if (!player.trim()) {
-
                 alert("Escribe tu nombre");
-
                 return;
-
               }
 
               setStarted(true);
 
             }}
           >
-
             COMENZAR
-
           </button>
 
         </div>
-
       </div>
-
     );
-
   }
 
+  // ============================
+  // PANTALLA FINAL
+  // ============================
+
   if (finished) {
+
+    let level = "🥉 Consultor Junior";
+
+    if (score >= 250) level = "🏆 Consultor Elite";
+    else if (score >= 200) level = "🥇 Consultor Senior";
+    else if (score >= 150) level = "🥈 Consultor Intermedio";
 
     const bestService = SERVICES.reduce((a, b) =>
       levels[a.id] > levels[b.id] ? a : b
@@ -190,95 +174,40 @@ export default function BusinessSimulator() {
 
       <div style={styles.background}>
 
-        <div style={styles.resultCard}>
+        <div style={styles.card}>
 
-          <h1 style={styles.resultTitle}>
-            🏆 SIMULACIÓN FINALIZADA
+          <h1 style={styles.title}>
+            🎉 Simulación Finalizada
           </h1>
 
-          <h2>{player}</h2>
+          <h2>
+            {player}
+          </h2>
 
-          <h1 style={{ color: "#22d3ee" }}>
-            {score} puntos
+          <h1
+            style={{
+              color:"#22d3ee",
+              fontSize:60
+            }}
+          >
+            {score}
           </h1>
 
-          <h2>{level()}</h2>
+          <h2>{level}</h2>
 
-          <hr style={{ margin: "30px 0", opacity: .2 }} />
+          <p style={{marginTop:25}}>
+            Servicio más desarrollado
+          </p>
 
-          <h2>Servicio más desarrollado</h2>
-
-          <h1>
-
+          <h2>
             {bestService.icon} {bestService.name}
-
-          </h1>
-
-          <div style={{ marginTop: 40 }}>
-
-            {
-
-              SERVICES.map(service => (
-
-                <div
-                  key={service.id}
-                  style={{ marginBottom: 18 }}
-                >
-
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      marginBottom: 6
-                    }}
-                  >
-
-                    <span>
-
-                      {service.icon} {service.name}
-
-                    </span>
-
-                    <b>
-
-                      {levels[service.id]}%
-
-                    </b>
-
-                  </div>
-
-                  <div style={styles.bar}>
-
-                    <div
-
-                      style={{
-                        ...styles.fill,
-                        width: `${levels[service.id]}%`,
-                        background: service.color
-                      }}
-
-                    />
-
-                  </div>
-
-                </div>
-
-              ))
-
-            }
-
-          </div>
+          </h2>
 
           <button
-
             style={styles.start}
-
-            onClick={restart}
-
+            onClick={() => window.location.reload()}
           >
-
-            🔄 JUGAR OTRA VEZ
-
+            JUGAR DE NUEVO
           </button>
 
         </div>
@@ -288,117 +217,91 @@ export default function BusinessSimulator() {
     );
 
   }
-
-  return (
-
+    return (
     <div style={styles.background}>
 
       <div style={styles.container}>
+
+        {/* PANEL IZQUIERDO */}
 
         <div style={styles.left}>
 
           <div style={styles.companyCard}>
 
             <h2>
-
               {company.icon} {company.company}
-
             </h2>
 
             <p>
-
-              👤 {player}
-
+              👤 <b>{player}</b>
             </p>
 
             <p>
-
-              💰 Presupuesto
-
-            </p>
-
-            <h3>
-
-              ${company.budget.toLocaleString()}
-
-            </h3>
-
-            <p>
-
-              🎯 Objetivo
-
+              💰 ${company.budget.toLocaleString()}
             </p>
 
             <small>
-
               {company.objective}
-
             </small>
 
           </div>
 
           <div style={styles.progressCard}>
 
-            <h3>📊 Desarrollo de Servicios</h3>
+            <h3>
+              Desarrollo de Servicios
+            </h3>
 
-            {
+            {SERVICES.map(service=>(
 
-              SERVICES.map(service => (
+              <div
+                key={service.id}
+                style={{marginBottom:15}}
+              >
 
                 <div
-                  key={service.id}
-                  style={{ marginBottom:18 }}
+                  style={{
+                    display:"flex",
+                    justifyContent:"space-between",
+                    marginBottom:5
+                  }}
                 >
 
-                  <div
-                    style={{
-                      display:"flex",
-                      justifyContent:"space-between",
-                      marginBottom:5
-                    }}
-                  >
+                  <span>
 
-                    <span>
+                    {service.icon} {service.name}
 
-                      {service.icon} {service.name}
+                  </span>
 
-                    </span>
+                  <b>
 
-                    <b>
+                    {levels[service.id]}%
 
-                      {levels[service.id]}%
-
-                    </b>
-
-                  </div>
-
-                  <div style={styles.bar}>
-
-                    <div
-
-                      style={{
-
-                        ...styles.fill,
-
-                        width:`${levels[service.id]}%`,
-
-                        background:service.color
-
-                      }}
-
-                    />
-
-                  </div>
+                  </b>
 
                 </div>
 
-              ))
+                <div style={styles.bar}>
 
-            }
+                  <div
+                    style={{
+                      ...styles.fill,
+                      width:`${levels[service.id]}%`,
+                      background:service.color
+                    }}
+                  />
+
+                </div>
+
+              </div>
+
+            ))}
 
           </div>
 
         </div>
+
+        {/* PANEL DERECHO */}
 
         <div style={styles.right}>
 
@@ -408,7 +311,7 @@ export default function BusinessSimulator() {
 
               <span>
 
-                Pregunta {questionIndex+1} de {company.questions.length}
+                Pregunta {questionIndex+1} / {company.questions.length}
 
               </span>
 
@@ -420,61 +323,27 @@ export default function BusinessSimulator() {
 
             </div>
 
-            {/* Barra de tiempo */}
-
-            <div
-              style={{
-                width:"100%",
-                height:12,
-                background:"#1e293b",
-                borderRadius:20,
-                overflow:"hidden",
-                marginBottom:25
-              }}
-            >
+            <div style={styles.timerBar}>
 
               <div
-
                 style={{
-
-                  height:"100%",
-
-                  width:`${time*5}%`,
-
-                  transition:"1s",
-
-                  background:
-
-                    time>10
-
-                    ? "#22d3ee"
-
-                    : time>5
-
-                    ? "#f59e0b"
-
-                    : "#ef4444"
-
+                  ...styles.timerFill,
+                  width:`${time*5}%`
                 }}
-
               />
 
             </div>
 
             <h2
               style={{
-                lineHeight:1.5,
-                marginBottom:30
+                marginTop:25,
+                marginBottom:25
               }}
             >
-
               {question.question}
-
             </h2>
 
             {
-
-              !feedback &&
 
               question.options.map((option,index)=>(
 
@@ -482,9 +351,31 @@ export default function BusinessSimulator() {
 
                   key={index}
 
-                  style={styles.option}
+                  disabled={showExplanation}
 
-                  onClick={()=>handleAnswer(index)}
+                  onClick={()=>answer(index)}
+
+                  style={{
+
+                    ...styles.option,
+
+                    background:
+
+                      showExplanation
+
+                      ? index===question.correct
+
+                        ? "#16a34a"
+
+                        : index===selected
+
+                        ? "#dc2626"
+
+                        : "#1e293b"
+
+                      : "#1e293b"
+
+                  }}
 
                 >
 
@@ -498,80 +389,41 @@ export default function BusinessSimulator() {
 
             {
 
-              feedback && (
+              showExplanation &&
 
-                <div
-                  style={{
+              <div style={styles.explanation}>
 
-                    marginTop:25,
+                <h3>
 
-                    padding:20,
+                  💡 Explicación
 
-                    borderRadius:20,
+                </h3>
 
-                    background:
+                <p>
 
-                      feedback.correct
+                  {question.explanation}
 
-                      ? "#052e16"
+                </p>
 
-                      : "#450a0a"
+                <button
 
-                  }}
+                  style={styles.start}
+
+                  onClick={nextQuestion}
+
                 >
 
-                  <h2>
+                  SIGUIENTE
 
-                    {
+                </button>
 
-                      feedback.correct
-
-                      ? "✅ ¡Correcto!"
-
-                      : "❌ Respuesta incorrecta"
-
-                    }
-
-                  </h2>
-
-                  <p
-                    style={{
-                      lineHeight:1.7,
-                      marginTop:15
-                    }}
-                  >
-
-                    {feedback.explanation}
-
-                  </p>
-
-                  <button
-
-                    style={{
-
-                      ...styles.start,
-
-                      marginTop:30
-
-                    }}
-
-                    onClick={handleNext}
-
-                  >
-
-                    Siguiente →
-
-                  </button>
-
-                </div>
-
-              )
+              </div>
 
             }
 
             <div style={styles.score}>
 
-              Puntaje: {score}
+              ⭐ Puntaje: {score}
 
             </div>
 
@@ -598,8 +450,10 @@ const styles = {
 
   container:{
     display:"grid",
-    gridTemplateColumns:"350px 1fr",
-    gap:25
+    gridTemplateColumns:"360px 1fr",
+    gap:25,
+    maxWidth:1400,
+    margin:"0 auto"
   },
 
   left:{
@@ -615,9 +469,9 @@ const styles = {
     margin:"60px auto",
     background:"#111827",
     borderRadius:25,
-    padding:45,
+    padding:40,
     textAlign:"center",
-    boxShadow:"0 0 35px rgba(34,211,238,.15)"
+    boxShadow:"0 0 35px rgba(34,211,238,.20)"
   },
 
   title:{
@@ -627,8 +481,8 @@ const styles = {
   },
 
   subtitle:{
-    color:"#94a3b8",
-    lineHeight:1.7,
+    color:"#cbd5e1",
+    lineHeight:1.6,
     marginBottom:30
   },
 
@@ -640,7 +494,8 @@ const styles = {
     background:"#020617",
     color:"white",
     fontSize:18,
-    outline:"none"
+    outline:"none",
+    boxSizing:"border-box"
   },
 
   start:{
@@ -649,40 +504,56 @@ const styles = {
     padding:18,
     border:"none",
     borderRadius:15,
-    cursor:"pointer",
-    fontSize:18,
-    fontWeight:"bold",
+    background:"linear-gradient(90deg,#06b6d4,#2563eb)",
     color:"white",
-    background:"linear-gradient(90deg,#06b6d4,#2563eb)"
+    cursor:"pointer",
+    fontWeight:"bold",
+    fontSize:18
   },
 
   companyCard:{
     background:"#111827",
     borderRadius:20,
-    padding:25,
-    boxShadow:"0 0 20px rgba(34,211,238,.10)"
+    padding:20,
+    boxShadow:"0 0 20px rgba(34,211,238,.12)"
   },
 
   progressCard:{
     background:"#111827",
     borderRadius:20,
-    padding:25,
-    boxShadow:"0 0 20px rgba(34,211,238,.10)"
+    padding:20,
+    boxShadow:"0 0 20px rgba(34,211,238,.12)"
   },
 
   questionCard:{
     background:"#111827",
     borderRadius:20,
-    padding:35,
-    boxShadow:"0 0 25px rgba(34,211,238,.10)"
+    padding:30,
+    boxShadow:"0 0 20px rgba(34,211,238,.12)"
   },
 
   topRow:{
     display:"flex",
     justifyContent:"space-between",
+    alignItems:"center",
     color:"#22d3ee",
     fontWeight:"bold",
-    marginBottom:15
+    fontSize:18
+  },
+
+  timerBar:{
+    width:"100%",
+    height:12,
+    background:"#1e293b",
+    borderRadius:20,
+    overflow:"hidden",
+    marginTop:15
+  },
+
+  timerFill:{
+    height:"100%",
+    background:"linear-gradient(90deg,#22d3ee,#3b82f6)",
+    transition:"all 1s linear"
   },
 
   option:{
@@ -693,9 +564,26 @@ const styles = {
     border:"1px solid #334155",
     background:"#1e293b",
     color:"white",
-    fontSize:17,
     cursor:"pointer",
-    transition:"all .25s ease"
+    fontSize:17,
+    transition:"all .25s"
+  },
+
+  explanation:{
+    marginTop:25,
+    padding:20,
+    borderRadius:15,
+    background:"#0f172a",
+    border:"1px solid #334155",
+    color:"#e2e8f0"
+  },
+
+  score:{
+    marginTop:25,
+    textAlign:"center",
+    fontSize:28,
+    color:"#22d3ee",
+    fontWeight:"bold"
   },
 
   bar:{
@@ -703,39 +591,12 @@ const styles = {
     height:12,
     background:"#1e293b",
     borderRadius:20,
-    overflow:"hidden",
-    marginTop:6
+    overflow:"hidden"
   },
 
   fill:{
     height:"100%",
-    transition:"width .5s ease"
-  },
-
-  score:{
-    marginTop:30,
-    fontSize:28,
-    fontWeight:"bold",
-    color:"#22d3ee",
-    textAlign:"center"
-  },
-
-  resultCard:{
-    maxWidth:800,
-    margin:"40px auto",
-    background:"#111827",
-    borderRadius:25,
-    padding:45,
-    boxShadow:"0 0 35px rgba(34,211,238,.15)"
-  },
-
-  resultTitle:{
-    textAlign:"center",
-    color:"#22d3ee",
-    fontSize:40,
-    marginBottom:25
+    transition:"all .6s ease"
   }
 
 };
-
-export default BusinessSimulator;

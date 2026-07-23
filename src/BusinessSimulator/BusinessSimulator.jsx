@@ -32,17 +32,31 @@ export default function BusinessSimulator() {
     formulas: 0,
   });
 
-  const question = company.questions[questionIndex];
+  const question = useMemo(() => {
 
-  useEffect(() => {
+  const original = company.questions[questionIndex];
 
-    if (!started || finished || showExplanation) return;
+  const options = original.options.map((text, index) => ({
+    text,
+    correct: index === original.correct
+  }));
 
-    if (time === 0) {
+  // Fisher-Yates Shuffle
+  for (let i = options.length - 1; i > 0; i--) {
 
-      nextQuestion();
+    const j = Math.floor(Math.random() * (i + 1));
 
-      return;
+    [options[i], options[j]] = [options[j], options[i]];
+
+  }
+
+  return {
+    ...original,
+    options,
+    correct: options.findIndex(o => o.correct)
+  };
+
+}, [company, questionIndex]);
 
     }
 
@@ -379,7 +393,7 @@ export default function BusinessSimulator() {
 
                 >
 
-                  {option}
+                  {option.text}
 
                 </button>
 

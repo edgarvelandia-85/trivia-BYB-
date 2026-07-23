@@ -58,7 +58,14 @@ export default function BusinessSimulator() {
 
 }, [company, questionIndex]);
 
-    }
+    useEffect(() => {
+
+  if (!started || finished || showExplanation) return;
+
+  if (time === 0) {
+    nextQuestion();
+    return;
+  }
 
     const timer = setTimeout(() => {
 

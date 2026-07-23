@@ -205,7 +205,7 @@ export const COMPANIES = [
     marketing: 5
   }
 },
-  ,
+  
 {
   id: 7,
 
@@ -253,7 +253,7 @@ export const COMPANIES = [
     marketing: 10
   }
 },
-  ,
+  
 {
   id: 9,
 
@@ -277,7 +277,7 @@ export const COMPANIES = [
     marketing: 10
   }
 },
-  ,
+  
 {
   id: 10,
 
